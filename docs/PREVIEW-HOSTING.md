@@ -10,3 +10,5 @@ A trusted Let’s Encrypt certificate was issued through cPanel AutoSSL on 2026-
 The preview server is currently a detached process, not an installed boot service. Logs and PID are under .tools/preview-server.log and .tools/preview-processes.txt. Start from the project directory with PORT=3001 npm start after a reboot. The local Node runtime is .tools/node-v22.23.3-linux-x64/bin/node, but it is not needed when the team has Node.js 22 installed. The previous temporary Cloudflare tunnel is no longer needed.
 
 Verification: trusted TLS and hostname validation passed; HTTPS homepage/library returned 200; tablet-sized Chromium rendered assets and exercised search without request or JavaScript errors; existing WordPress homepage returned 200.
+
+Public homepage audio: `/audio/` bypasses the Next.js proxy. Four exact AliasMatch mappings read original recordings from `/home/newbreslovtorah/public_html/media`. The portable template is `deploy/public-audio-apache.conf`; the aliases belong only to the preview virtual hosts. WordPress .htaccess files and originals remain unchanged.

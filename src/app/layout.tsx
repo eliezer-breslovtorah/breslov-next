@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Shell } from "@/components/shell";
+import { MediaProvider } from "@/components/media-provider";
 export const metadata: Metadata = {
   title: {
     default: "Breslov Torah | Wisdom for everyday life",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <Shell>{children}</Shell>
+        <MediaProvider>
+          <Shell>{children}</Shell>
+        </MediaProvider>
       </body>
     </html>
   );
