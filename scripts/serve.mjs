@@ -2,11 +2,12 @@ import { cpSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 const root = process.cwd();
-const output = resolve(root, ".next/standalone");
+const buildDir = process.env.NEXT_OUTPUT_DIR || ".next";
+const output = resolve(root, buildDir, "standalone");
 if (!existsSync(resolve(output, "server.js")))
   throw new Error("Run npm run build before starting the server.");
 cpSync(resolve(root, "public"), resolve(output, "public"), { recursive: true });
-cpSync(resolve(root, ".next/static"), resolve(output, ".next/static"), {
+cpSync(resolve(root, buildDir, "static"), resolve(output, buildDir, "static"), {
   recursive: true,
 });
 process.env.HOSTNAME = process.env.APP_HOST || "127.0.0.1";

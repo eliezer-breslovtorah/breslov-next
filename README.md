@@ -66,3 +66,7 @@ CONTENT_CATALOG_PATH=./data/public-catalog.json npm start
 ```
 
 Review the migration report and resolve duplicate slugs, teacher mappings, collection URLs, and assets before building. The catalog is a build input, so rebuild after edits. Membership, protected playback, forms, and the complete staff editing workflow remain migration work; this app is a UI preview and must not yet replace production.
+
+## Homepage editing
+
+The featured teaching, public short clips, and guided course choices are configured in `content/homepage.json`. See [homepage editing and media provenance](docs/HOMEPAGE.md). Rebuild and restart after changing these settings.

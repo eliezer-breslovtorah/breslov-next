@@ -1,0 +1,54 @@
+{
+  "featured": {
+    "id": "bereishis-water",
+    "title": "Bereishis – The Hidden Creation of Water",
+    "speaker": "Rabbi Nasan Maimon",
+    "duration": "3:22",
+    "poster": "/images/featured-teaching.jpg",
+    "videoEmbedUrl": "https://player.vimeo.com/video/761745697?dnt=1&autoplay=1&playsinline=1",
+    "pageUrl": "https://www.breslovtorah.com/",
+    "audio": {
+      "id": "hidden-creation-of-water",
+      "title": "Bereishis – The Hidden Creation of Water",
+      "speaker": "Rabbi Nasan Maimon",
+      "duration": "3:00",
+      "audioSrc": "/audio/hidden-creation-of-water.mp3",
+      "pageUrl": "https://www.breslovtorah.com/shiurim/bereishis-the-hidden-creation-of-water-clip/"
+    },
+    "videoPageUrl": "https://vimeo.com/761745697"
+  },
+  "clips": [
+    {
+      "id": "the-first-step",
+      "title": "The First Step",
+      "speaker": "Rabbi Nasan Maimon",
+      "duration": "1:45",
+      "audioSrc": "/audio/the-first-step.mp3",
+      "pageUrl": "https://www.breslovtorah.com/shiurim/breslov-basics-01-the-first-step/"
+    },
+    {
+      "id": "you-are-not-alone",
+      "title": "You Are Not Alone",
+      "speaker": "Rabbi Nasan Maimon",
+      "duration": "1:29",
+      "audioSrc": "/audio/you-are-not-alone.mp3",
+      "pageUrl": "https://www.breslovtorah.com/shiurim/breslov-basics-02-you-are-not-alone/"
+    },
+    {
+      "id": "every-good-thought-counts",
+      "title": "Every Good Thought Counts",
+      "speaker": "Rabbi Nasan Maimon",
+      "duration": "1:10",
+      "audioSrc": "/audio/every-good-thought-counts.mp3",
+      "pageUrl": "https://www.breslovtorah.com/shiurim/breslov-basics-03-every-good-thought-counts/"
+    }
+  ],
+  "courseSlugs": [
+    "azamra",
+    "simcha",
+    "likutey-moharan-2"
+  ],
+  "firstLessons": {
+    "azamra": "azamra-lesson-1-lm1-torah-282-part-1"
+  }
+}
