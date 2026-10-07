@@ -129,8 +129,13 @@ export function FeaturedTeaching({ item }: { item: FeaturedItem }) {
               : item.duration}
           </p>
         </div>
-        <a href={tab === "watch" ? item.videoPageUrl : item.pageUrl} target="_blank" rel="noreferrer">
-          {tab === "watch" ? "Open video" : "Original lesson"} <ExternalLink size={14} />
+        <a
+          href={tab === "watch" ? item.videoPageUrl : item.pageUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          {tab === "watch" ? "Open video" : "Original lesson"}{" "}
+          <ExternalLink size={14} />
         </a>
       </div>
     </div>

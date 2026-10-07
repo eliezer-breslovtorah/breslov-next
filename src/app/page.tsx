@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Headphones, Search } from "lucide-react";
-import { lessons, collections, teachers } from "@/lib/catalog";
+import { getLessons, getCollections, getTeachers } from "@/lib/catalog";
 import { homepage } from "@/lib/homepage";
 import { FeaturedTeaching, ShortClips } from "@/components/home-media";
 import { LessonCard } from "@/components/lesson-card";
+export const dynamic = "force-dynamic";
 export default function Home() {
+  const lessons = getLessons({ pageSize: 4 }).items;
+  const collections = getCollections();
+  const teachers = getTeachers();
   return (
     <div className="page-wrap">
       <section className="learning-hero" aria-label="Start learning">
@@ -190,7 +194,7 @@ export default function Home() {
             generations to come.
           </p>
         </div>
-        <a className="button" href="https://donate.breslovtorah.com/">
+        <a className="button" href="/donate">
           Support our work <ArrowRight size={18} />
         </a>
       </section>

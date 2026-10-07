@@ -1,0 +1,167 @@
+.support-intro,
+.service-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+.support-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid var(--line, #ddd);
+  border-radius: 12px;
+  padding: 26px;
+  background: white;
+  overflow-wrap: anywhere;
+}
+.support-card h2,
+.support-card h3 {
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+.support-card span {
+  margin-top: auto;
+  color: #8b6128;
+}
+.service-form {
+  padding: 28px;
+  background: #eeebe3;
+  border-radius: 12px;
+}
+.service-form p {
+  margin-bottom: 20px;
+}
+.external-form {
+  display: block;
+  width: 100%;
+  height: 950px;
+  background: white;
+  border: 1px solid #ddd;
+  margin-top: 20px;
+}
+.imported-copy {
+  white-space: pre-wrap;
+  max-width: 850px;
+  overflow-wrap: anywhere;
+}
+.lesson-category-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.lesson-category-list a {
+  font-size: 12px;
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  border-radius: 20px;
+}
+.lesson-dedication {
+  padding: 24px;
+  background: #efe7d8;
+  border-left: 3px solid #b7883d;
+  margin: 24px 0;
+  white-space: pre-wrap;
+}
+.lesson-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.native-play-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lesson-video {
+  width: 100%;
+  aspect-ratio: 16/9;
+  border: 0;
+}
+.lesson-bookmark {
+  border: 1px solid #ccc;
+  padding: 10px 16px;
+  border-radius: 6px;
+}
+.search-results-status {
+  min-height: 24px;
+}
+@media (max-width: 900px) {
+  .support-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .external-form {
+    height: 1050px;
+  }
+}
+@media (max-width: 600px) {
+  .support-grid {
+    grid-template-columns: 1fr;
+  }
+  .support-card,
+  .service-form {
+    padding: 20px;
+  }
+  .external-form {
+    height: 1100px;
+  }
+  .service-actions .button {
+    width: 100%;
+  }
+}
+
+.container {
+  width: min(1200px, calc(100% - 48px));
+  margin-left: auto;
+  margin-right: auto;
+}
+.container.section {
+  padding-top: 36px;
+  padding-bottom: 60px;
+  overflow-wrap: anywhere;
+}
+.container > h1 {
+  margin-bottom: 20px;
+}
+.container > h2 {
+  margin-top: 36px;
+  margin-bottom: 16px;
+}
+.container > p {
+  margin-bottom: 16px;
+}
+.container form > label > input[type="search"] {
+  max-width: 100%;
+  padding: 12px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  font: inherit;
+}
+.admin-list article p {
+  margin-top: 6px;
+}
+.admin-editor input,
+.account-form input,
+.admin-editor select {
+  min-height: 44px;
+}
+@media (max-width: 600px) {
+  .container {
+    width: calc(100% - 32px);
+  }
+}
+
+.playback-panel .button-secondary {
+  color: #fff;
+  border-color: #9baab5;
+}
+.playback-panel .button-secondary:hover {
+  background: #28475c;
+}
+.lesson-aside a.button {
+  color: #fff;
+}

@@ -2,6 +2,8 @@ import { cpSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 const root = process.cwd();
+process.env.APP_DATA_DIR ||= resolve(root, "data");
+process.env.CATALOG_SEED_PATH ||= resolve(root, "content/catalog.json");
 const buildDir = process.env.NEXT_OUTPUT_DIR || ".next";
 const output = resolve(root, buildDir, "standalone");
 if (!existsSync(resolve(output, "server.js")))

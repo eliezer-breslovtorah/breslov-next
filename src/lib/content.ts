@@ -1,4 +1,22 @@
+export type TermRef = {
+  id: number;
+  slug: string;
+  title: string;
+  taxonomy: string;
+  parentId: number;
+};
 export type Lesson = {
+  id?: string;
+  bodyText?: string;
+  categories?: TermRef[];
+  collectionSlugs?: string[];
+  publishedAt?: string;
+  updatedAt?: string;
+  status?: "draft" | "publish";
+  dedication?: string;
+  access?: "public" | "members" | "legacy";
+  hasMedia?: boolean;
+  videoEmbedUrl?: string;
   slug: string;
   title: string;
   speaker: string;
@@ -11,6 +29,11 @@ export type Lesson = {
   image: string;
 };
 export type Collection = {
+  sourceId?: number;
+  taxonomy?: string;
+  parentId?: number;
+  count?: number;
+  hebrewTitle?: string;
   slug: string;
   title: string;
   description: string;
