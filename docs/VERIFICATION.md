@@ -27,3 +27,13 @@ WordPress main and donation homepages still return HTTP 200. No original content
 ## Deployment limits
 
 Chromium emulation was tested; actual Safari/Firefox and real tablets still require team validation. Vimeo playback depends on the external provider and browser settings. Existing Gravity Forms payment flows are reused; no live charges or payment submission were made during QA. New billing-to-membership synchronization is not included. Password recovery is staff assisted; outbound email is not configured. Docker and managed-service templates are provided but not executed here. The preview is a detached process and requires restart after a server reboot. Final production domain cutover remains separate from the preview deployment.
+
+## Native navigation and live search (2026-10-07)
+
+The complete isolated-browser suite passed 49 checks across desktop, tablet, mobile, and 320px small mobile; 23 tests requiring explicit write-test authorization were skipped. Separate isolated contact/newsletter and matchmaking submission checks passed, including private attachment access and invalid-image rejection. Visual screenshots were reviewed for articles and newsletter layouts. The newsletter honeypot was explicitly hidden after screenshot review.
+
+A rapid filter regression check also covers changing two selectors in succession, retaining the search, clearing the page number, and returning through browser history. It exposed a selective-format FTS query plan; full-text queries now begin with matching FTS rows before joining lessons. The portable package was installed with npm ci, typechecked and built successfully in a fresh directory outside the original workspace.
+
+Final clean-build checks passed autocomplete and rapid filter/history interactions at all four viewport sizes. The combined Maimon + Video + oldest search decreased from about 5.3 seconds to under one second during local verification. The tested clean standalone build was installed on the isolated preview; original WordPress and donation homepages continued returning HTTP 200.
+
+Public HTTPS preview verification completed: **53 passed, 23 skipped**, across desktop (1440px), tablet (768px), mobile (390px), and small mobile (320px). Skipped tests require isolated writes or authenticated staff fixtures. No automated form submissions were sent to the shared preview.

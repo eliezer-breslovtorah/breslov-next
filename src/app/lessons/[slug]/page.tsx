@@ -47,7 +47,6 @@ export default async function Page({
     duration: lesson.duration || "",
     audioSrc: `/api/media/${encodeURIComponent(lesson.id || lesson.slug)}`,
     pageUrl: `/lessons/${encodeURIComponent(lesson.slug)}`,
-    fallbackUrl: lesson.legacyUrl,
   };
   const related = getLessons({ teacher: lesson.speaker, pageSize: 5 })
     .items.filter((l) => l.slug !== lesson.slug)
@@ -117,7 +116,9 @@ export default async function Page({
               <p>
                 {effectiveAccess === "members"
                   ? "Sign in with an active membership to play this recording."
-                  : "Check the original lesson for recording availability and access options."}
+                  : availability !== "available"
+                    ? "This recording is currently unavailable. Ask our team for help finding or restoring it."
+                    : "This recording needs an access review. Contact our team for help."}
               </p>
               <div className="native-play-actions">
                 {effectiveAccess === "members" && (
@@ -128,14 +129,12 @@ export default async function Page({
                     Sign in to listen
                   </Link>
                 )}
-                <a
+                <Link
                   className="button button-secondary"
-                  href={lesson.legacyUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                  href={`/contact?subject=${encodeURIComponent(`Recording help: ${lesson.title}`)}`}
                 >
-                  Open original lesson ↗
-                </a>
+                  Ask for recording help
+                </Link>
               </div>
             </div>
           )}

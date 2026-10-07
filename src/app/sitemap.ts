@@ -1,3 +1,5 @@
+import { articles } from "@/lib/articles";
+import { nativePages } from "@/lib/page-navigation";
 import type { MetadataRoute } from "next";
 import {
   getLessons,
@@ -20,6 +22,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/contact",
     "/community",
     "/calendar",
+    "/newsletter",
+    "/projects",
+    "/blog",
+    "/community/matchmaking",
+    "/community/matchmaking/follow-up",
   ];
   const first = getLessons({ pageSize: 100 });
   for (let page = 1; page <= Math.ceil(first.total / 100); page++)
@@ -28,7 +35,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   paths.push(
     ...getCollections().map((c) => `/courses/${encodeURIComponent(c.slug)}`),
     ...getTeachers().map((t) => `/teachers/${t.slug}`),
-    ...getPublicPages().map((p) => `/pages/${encodeURIComponent(p.slug)}`),
+    ...getPublicPages().map(
+      (p) => nativePages[p.slug] || `/pages/${encodeURIComponent(p.slug)}`,
+    ),
+    ...articles.map((a) => `/blog/${encodeURIComponent(a.slug)}`),
   );
-  return paths.map((path) => ({ url: base + path }));
+  return [...new Set(paths)].map((path) => ({ url: base + path }));
 }

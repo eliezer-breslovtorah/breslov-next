@@ -99,6 +99,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Link href="/teachers">Our teachers</Link>
             <Link href="/calendar">Class schedule</Link>
             <Link href="/community">Community &amp; prayer</Link>
+            <Link href="/blog">Articles &amp; updates</Link>
+            <Link href="/newsletter">Breslov Bridge newsletter</Link>
           </div>
           <div>
             <h3>Connect</h3>

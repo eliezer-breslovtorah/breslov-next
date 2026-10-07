@@ -107,9 +107,8 @@ test("server search, filters, empty state, and paginated query state", async ({
   await expect(page).toHaveURL(/page=2/);
   await expect(page.locator(".pagination")).toContainText("Page 2");
   await page
-    .getByRole("textbox", { name: "Search the library" })
+    .getByRole("combobox", { name: "Search the library" })
     .fill("Copper");
-  await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page).toHaveURL(/q=Copper/);
   expect(new URL(page.url()).searchParams.has("page")).toBe(false);
   const matches = Number(
@@ -121,9 +120,6 @@ test("server search, filters, empty state, and paginated query state", async ({
   await page
     .getByRole("combobox", { name: "Format", exact: true })
     .selectOption("Video");
-  await page
-    .getByRole("button", { name: "Apply filters", exact: true })
-    .click();
   await expect(page).toHaveURL(/format=Video/);
   const videos = Number(
     (await page.locator(".results-bar strong").innerText()).replaceAll(",", ""),
@@ -133,9 +129,8 @@ test("server search, filters, empty state, and paginated query state", async ({
   for (const row of await page.locator(".lesson-row").all())
     await expect(row.locator(".meta")).toContainText("Video");
   await page
-    .getByRole("textbox", { name: "Search the library" })
+    .getByRole("combobox", { name: "Search the library" })
     .fill("zzzz-no-result");
-  await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "No lessons found" }),
   ).toBeVisible();
@@ -147,9 +142,7 @@ test("server search, filters, empty state, and paginated query state", async ({
   await page
     .getByRole("combobox", { name: "Teacher", exact: true })
     .selectOption(teacher.name);
-  await page
-    .getByRole("button", { name: "Apply filters", exact: true })
-    .click();
+  await expect(page).toHaveURL(/teacher=/);
   const count = Number(
     (await page.locator(".results-bar strong").innerText()).replaceAll(",", ""),
   );
@@ -181,4 +174,70 @@ test("collection directory paginates and preserves filters; guided lessons start
   await expect(
     page.getByRole("combobox", { name: "Sort by", exact: true }),
   ).toHaveValue("oldest");
+});
+
+test("live search and autocomplete support keyboard selection", async ({
+  page,
+}, info) => {
+  await page.goto("/library?page=2");
+  const input = page.getByRole("combobox", { name: "Search the library" });
+  await input.fill("Maimon");
+  await expect(page).toHaveURL(/q=Maimon/, { timeout: 15000 });
+  expect(new URL(page.url()).searchParams.has("page")).toBe(false);
+  await expect(
+    page.getByRole("listbox", { name: "Search suggestions" }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `qa/screenshots/${info.project.name}-autocomplete.png`,
+    fullPage: true,
+  });
+  const first = await page.getByRole("option").first().innerText();
+  await input.press("ArrowDown");
+  await expect(input).toHaveAttribute("aria-activedescendant", "suggestion-0");
+  await input.press("Escape");
+  await expect(
+    page.getByRole("listbox", { name: "Search suggestions" }),
+  ).toHaveCount(0);
+  await input.fill("Maimo");
+  await expect(
+    page.getByRole("listbox", { name: "Search suggestions" }),
+  ).toBeVisible();
+  await input.press("ArrowDown");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/lessons\//);
+  await expect(page.locator("h1")).toBeVisible();
+  expect(first.length).toBeGreaterThan(0);
+});
+
+test("rapid filter selections retain both values and browser history restores search", async ({
+  page,
+}) => {
+  await page.goto("/library?q=Copper&page=2");
+  await openFilters(page);
+  await page
+    .getByRole("combobox", { name: "Format", exact: true })
+    .selectOption("Video");
+  await page
+    .getByRole("combobox", { name: "Sort by", exact: true })
+    .selectOption("oldest");
+  await expect(page).toHaveURL(/sort=oldest/);
+  const query = new URL(page.url()).searchParams;
+  expect(query.get("format")).toBe("Video");
+  expect(query.get("q")).toBe("Copper");
+  expect(query.has("page")).toBe(false);
+  await expect(
+    page.getByRole("button", { name: "Apply filters", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("combobox", { name: "Search the library" })
+    .fill("Maimon");
+  await expect(page).toHaveURL(/q=Maimon/, { timeout: 15000 });
+  await page
+    .getByRole("link", { name: "About Breslov Torah", exact: true })
+    .click();
+  await expect(page).toHaveURL(/\/about$/);
+  await page.goBack();
+  await expect(
+    page.getByRole("combobox", { name: "Search the library" }),
+  ).toHaveValue("Maimon");
 });

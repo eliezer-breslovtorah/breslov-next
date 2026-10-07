@@ -1,19 +1,19 @@
 {
   "featured": {
     "id": "bereishis-water",
-    "title": "Bereishis – The Hidden Creation of Water",
+    "title": "Bereishis \u2013 The Hidden Creation of Water",
     "speaker": "Rabbi Nasan Maimon",
     "duration": "3:22",
     "poster": "/images/featured-teaching.jpg",
     "videoEmbedUrl": "https://player.vimeo.com/video/761745697?dnt=1&autoplay=1&playsinline=1",
-    "pageUrl": "https://www.breslovtorah.com/",
+    "pageUrl": "/lessons/bereishis-the-hidden-creation-of-water-text-slides",
     "audio": {
       "id": "hidden-creation-of-water",
-      "title": "Bereishis – The Hidden Creation of Water",
+      "title": "Bereishis \u2013 The Hidden Creation of Water",
       "speaker": "Rabbi Nasan Maimon",
       "duration": "3:00",
       "audioSrc": "/audio/hidden-creation-of-water.mp3",
-      "pageUrl": "https://www.breslovtorah.com/shiurim/bereishis-the-hidden-creation-of-water-clip/"
+      "pageUrl": "/lessons/parsha-01-bereishis-creation-of-water-clip"
     },
     "videoPageUrl": "https://vimeo.com/761745697"
   },
@@ -24,7 +24,7 @@
       "speaker": "Rabbi Nasan Maimon",
       "duration": "1:45",
       "audioSrc": "/audio/the-first-step.mp3",
-      "pageUrl": "https://www.breslovtorah.com/shiurim/breslov-basics-01-the-first-step/"
+      "pageUrl": "/lessons/breslov-basics-01-the-first-step"
     },
     {
       "id": "you-are-not-alone",
@@ -32,7 +32,7 @@
       "speaker": "Rabbi Nasan Maimon",
       "duration": "1:29",
       "audioSrc": "/audio/you-are-not-alone.mp3",
-      "pageUrl": "https://www.breslovtorah.com/shiurim/breslov-basics-02-you-are-not-alone/"
+      "pageUrl": "/lessons/breslov-basics-02-you-are-not-alone"
     },
     {
       "id": "every-good-thought-counts",
@@ -40,7 +40,7 @@
       "speaker": "Rabbi Nasan Maimon",
       "duration": "1:10",
       "audioSrc": "/audio/every-good-thought-counts.mp3",
-      "pageUrl": "https://www.breslovtorah.com/shiurim/breslov-basics-03-every-good-thought-counts/"
+      "pageUrl": "/lessons/breslov-basics-03-every-good-thought-counts"
     }
   ],
   "courseSlugs": [

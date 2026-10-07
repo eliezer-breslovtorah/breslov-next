@@ -1,20 +1,23 @@
 "use client";
 import { useState } from "react";
 export function ServiceForm({ url, title }: { url: string; title: string }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
   return (
     <section className="service-form">
-      <p>Your form is handled by the existing Breslov Torah service.</p>
+      <p>
+        Complete your form below. Payments are handled securely by Breslov
+        Torah’s donation service.
+      </p>
       <div className="service-actions">
         <a className="button" href={url} target="_blank" rel="noreferrer">
-          Open {title} ↗
+          Open secure checkout in a new tab ↗
         </a>
         <button
           className="button button-secondary"
           onClick={() => setOpen(!open)}
           aria-expanded={open}
         >
-          {open ? "Close embedded form" : "Fill out form here"}
+          {open ? "Hide form" : "Show form"}
         </button>
       </div>
       {open && (

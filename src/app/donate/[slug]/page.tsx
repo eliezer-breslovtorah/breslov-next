@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { findDonationForm } from "@/lib/donations";
+import { nativePages } from "@/lib/page-navigation";
 import { ServiceForm } from "@/components/service-form";
 export default async function Page({
   params,
@@ -13,6 +14,8 @@ export default async function Page({
   const { lesson } = await searchParams;
   const f = findDonationForm(slug);
   if (!f) notFound();
+  if (f.group === "Community" && nativePages[f.slug])
+    redirect(nativePages[f.slug]);
   const url = new URL(f.url);
   if (lesson) url.searchParams.set("shiurname", lesson.slice(0, 600));
   return (

@@ -1,6 +1,11 @@
-import { ServiceForm } from "@/components/service-form";
+import { ContactForm } from "@/components/contact-form";
 export const metadata = { title: "Contact Rabbi Nasan Maimon" };
-export default function Page() {
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ subject?: string }>;
+}) {
+  const { subject } = await searchParams;
   return (
     <div className="page-wrap">
       <header className="page-heading">
@@ -8,10 +13,7 @@ export default function Page() {
         <h1>Contact Rabbi Nasan Maimon</h1>
         <p>Send your question or message to Breslov Torah.</p>
       </header>
-      <ServiceForm
-        url="https://www.breslovtorah.com/contact/"
-        title="contact form"
-      />
+      <ContactForm initialSubject={subject?.slice(0, 200) || ""} />
     </div>
   );
 }

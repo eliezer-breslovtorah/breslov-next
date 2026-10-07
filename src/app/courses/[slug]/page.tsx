@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { legacyDestination } from "@/lib/page-navigation";
 import { getCollection, getCollections, getLessons } from "@/lib/catalog";
 import { Library, type BrowseQuery } from "@/components/library";
 export const dynamic = "force-dynamic";
@@ -25,7 +26,11 @@ export default async function Page({
 }) {
   const { slug } = await params;
   const collection = getCollection(slug);
-  if (!collection) notFound();
+  if (!collection) {
+    const target = legacyDestination(`/courses/${slug}`);
+    if (target && target !== `/courses/${slug}`) redirect(target);
+    notFound();
+  }
   const raw = await searchParams;
   const query: BrowseQuery = Object.fromEntries(
     ["q", "teacher", "topic", "format", "sort", "page"].map((key) => [

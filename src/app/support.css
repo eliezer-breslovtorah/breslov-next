@@ -165,3 +165,43 @@
 .lesson-aside a.button {
   color: #fff;
 }
+.page-resource-links {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 850px;
+  overflow-wrap: anywhere;
+}
+.page-resource-links a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.account-form .consent-label {
+  display: flex;
+  align-items: start;
+  gap: 12px;
+  font-weight: 400;
+}
+.account-form .consent-label input {
+  width: 18px;
+  min-height: 18px;
+  height: 18px;
+  margin: 4px 0 0;
+  flex-shrink: 0;
+}
+.blog-article-nav {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.blog-article-nav a {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.article-original-images {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 24px;
+  margin-bottom: 32px;
+}

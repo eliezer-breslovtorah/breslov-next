@@ -205,14 +205,9 @@ export function MediaProvider({
               />
               <span>{duration ? timeLabel(duration) : track.duration}</span>
             </div>
-            <a
-              href={track.fallbackUrl || track.pageUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Open original lesson"
-            >
+            <Link href={track.pageUrl} aria-label="Open lesson">
               <ExternalLink size={18} />
-            </a>
+            </Link>
             <button
               type="button"
               onClick={close}
@@ -223,13 +218,11 @@ export function MediaProvider({
             {error && (
               <p className="media-error" role="alert">
                 {error}{" "}
-                <a
-                  href={track.fallbackUrl || track.pageUrl}
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  href={`/contact?subject=${encodeURIComponent(`Recording help: ${track.title}`)}`}
                 >
-                  Open original lesson
-                </a>
+                  Ask for recording help
+                </Link>
               </p>
             )}
           </section>

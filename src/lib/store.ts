@@ -361,7 +361,12 @@ export function getLessons(query: SearchQuery = {}) {
     );
     params.push(query.topic, query.topic);
   }
-  const from = `FROM lessons l ${search ? "JOIN lesson_search ON lesson_search.lesson_id=l.id" : ""} ${where.length ? "WHERE " + where.join(" AND ") : ""}`;
+  // Start full-text queries with the matching FTS rows. This prevents SQLite
+  // from repeating a full FTS scan for each row of a selective format index.
+  const source = search
+    ? "lesson_search CROSS JOIN lessons l ON l.id=lesson_search.lesson_id"
+    : "lessons l";
+  const from = `FROM ${source} ${where.length ? "WHERE " + where.join(" AND ") : ""}`;
   const total = Number(
     (db.prepare(`SELECT COUNT(*) n ${from}`).get(...params) as { n: number }).n,
   );

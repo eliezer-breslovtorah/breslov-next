@@ -74,3 +74,11 @@ The writable backend suite is disabled by default. Start a separate app instance
 To regenerate the handoff archive, run `python3 scripts/package-source.py`. Its explicit source allowlist excludes private runtime data, credentials, node_modules and generated builds. Transfer private migration manifests and backups separately over a secure channel.
 
 A sample managed service is provided in `deploy/breslov-next.service`. Adjust its user, Node path, project path and environment file on the destination server. The app user needs read access to original media and write access to its own data and standalone build directories. Keep the service account separate from the WordPress owner when possible. The development preview is still a detached process; this template is not installed there.
+
+## Native navigation update (2026-10-07)
+
+The app now includes the 24 published articles, newsletter archives and subscription requests, native contact and matchmaking forms, twelve calendar topic collections, giving projects, and original public images served through an exact resource allowlist. Historical WordPress paths redirect to native destinations. Original recordings and images stay in their existing storage location. No WordPress configuration or data was changed.
+
+Contact, matchmaking, and newsletter requests are private in `/admin/inquiries`. Newsletter subscriptions require staff to add the address to the existing mailing service; no automatic delivery integration is configured. Back up the entire private `APP_DATA_DIR`, including inquiry attachments. Payment forms continue using the existing secure donation service. Nine unresolved historical references point to Contact; the missing original project brochure points to Projects. One archived article has no original body and displays an honest archive notice.
+
+Library filters update immediately, and typed search updates after a short debounce with keyboard-accessible lesson, teacher, and course suggestions.

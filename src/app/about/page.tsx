@@ -31,15 +31,12 @@ export default function Page() {
           </Link>
           <h2>Connect with Rabbi Maimon</h2>
           <p>
-            For questions and guidance, use the existing contact page during the
-            transition.
+            Send your questions or requests for guidance to the Breslov Torah
+            team.
           </p>
-          <a
-            className="button button-secondary"
-            href="https://www.breslovtorah.com/contact-rabbi-maimon/"
-          >
-            Contact Rabbi Maimon ↗
-          </a>
+          <Link className="button button-secondary" href="/contact">
+            Contact Rabbi Maimon →
+          </Link>
         </article>
         <aside className="lesson-aside">
           <img src="/images/rabbi-nasan-maimon.jpg" alt="Rabbi Nasan Maimon" />

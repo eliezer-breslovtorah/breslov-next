@@ -12,3 +12,5 @@ The preview server is currently a detached process, not an installed boot servic
 Verification: trusted TLS and hostname validation passed; HTTPS homepage/library returned 200; tablet-sized Chromium rendered assets and exercised search without request or JavaScript errors; existing WordPress homepage returned 200.
 
 Public homepage audio: `/audio/` bypasses the Next.js proxy. Four exact AliasMatch mappings read original recordings from `/home/newbreslovtorah/public_html/media`. The portable template is `deploy/public-audio-apache.conf`; the aliases belong only to the preview virtual hosts. WordPress .htaccess files and originals remain unchanged.
+
+On 2026-10-07 the preview was updated with native legacy pages and live library search using a clean handoff-source build. The previous preview build is preserved at `.tools/preview-build-before-native-pages` for rollback. Only the Next.js preview process was restarted; no WordPress or Apache configuration was changed for this update.

@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Search,
@@ -43,6 +44,138 @@ export function Library({
   fixedCategory?: string;
 }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const router = useRouter();
+  const [draft, setDraft] = useState<BrowseQuery>(query);
+  const draftRef = useRef<BrowseQuery>(query);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const pendingQuery = useRef<string | null>(null);
+  const [pending, startTransition] = useTransition();
+  const [focused, setFocused] = useState(false);
+  const [active, setActive] = useState(-1);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<
+    { title: string; detail: string; href: string }[]
+  >([]);
+  const text = draft.q || "";
+  function paramsFor(value: BrowseQuery) {
+    const params = new URLSearchParams();
+    for (const key of [
+      "q",
+      "teacher",
+      "category",
+      "collection",
+      "topic",
+      "format",
+      "sort",
+      "page",
+    ] as const)
+      if (value[key]) params.set(key, String(value[key]));
+    return params;
+  }
+  const queryKey = paramsFor(query).toString();
+  useEffect(() => {
+    if (pendingQuery.current && queryKey !== pendingQuery.current) return;
+    pendingQuery.current = null;
+    draftRef.current = query;
+    setDraft(query);
+  }, [queryKey]);
+  useEffect(() => {
+    const restore = () => {
+      clearTimeout(timer.current);
+      pendingQuery.current = null;
+      const value = Object.fromEntries(
+        new URLSearchParams(window.location.search),
+      ) as BrowseQuery;
+      if (fixedCategory && !value.sort) value.sort = "oldest";
+      draftRef.current = value;
+      setDraft(value);
+      setFocused(false);
+    };
+    window.addEventListener("popstate", restore);
+    return () => {
+      window.removeEventListener("popstate", restore);
+      clearTimeout(timer.current);
+    };
+  }, [fixedCategory]);
+  function navigate(value: BrowseQuery) {
+    clearTimeout(timer.current);
+    const params = paramsFor(value);
+    pendingQuery.current = params.toString();
+    startTransition(() =>
+      router.replace(basePath + (params.size ? `?${params}` : ""), {
+        scroll: false,
+      }),
+    );
+  }
+  function change(key: keyof BrowseQuery, value: string) {
+    const next = { ...draftRef.current, [key]: value, page: undefined };
+    draftRef.current = next;
+    pendingQuery.current = paramsFor(next).toString();
+    setDraft(next);
+    clearTimeout(timer.current);
+    if (key === "q")
+      timer.current = setTimeout(() => navigate(draftRef.current), 300);
+    else navigate(next);
+  }
+  useEffect(() => {
+    setActive(-1);
+    setSuggestions([]);
+    if (!focused || text.trim().length < 2) {
+      setSuggestionsLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    const timeout = setTimeout(async () => {
+      setSuggestionsLoading(true);
+      try {
+        const response = await fetch(
+          `/api/autocomplete?q=${encodeURIComponent(text)}`,
+          { signal: controller.signal },
+        );
+        if (!response.ok) throw new Error("Suggestions unavailable");
+        const data = await response.json();
+        if (controller.signal.aborted) return;
+        const items = [
+          ...(data.lessons || [])
+            .slice(0, 6)
+            .map((item: { slug: string; title: string; speaker: string }) => ({
+              title: item.title,
+              detail: `Lesson · ${item.speaker}`,
+              href: `/lessons/${encodeURIComponent(item.slug)}`,
+            })),
+          ...(data.teachers || [])
+            .slice(0, 3)
+            .map((item: { slug: string; name: string }) => ({
+              title: item.name,
+              detail: "Teacher",
+              href: `/teachers/${encodeURIComponent(item.slug)}`,
+            })),
+          ...(data.collections || [])
+            .slice(0, 3)
+            .map((item: { slug: string; title: string }) => ({
+              title: item.title,
+              detail: "Course or series",
+              href: `/courses/${encodeURIComponent(item.slug)}`,
+            })),
+        ];
+        setSuggestions(items);
+      } catch {
+        if (!controller.signal.aborted) setSuggestions([]);
+      } finally {
+        if (!controller.signal.aborted) setSuggestionsLoading(false);
+      }
+    }, 150);
+    return () => {
+      clearTimeout(timeout);
+      controller.abort();
+    };
+  }, [text, focused]);
+  function choose(href: string) {
+    clearTimeout(timer.current);
+    setFocused(false);
+    router.push(href);
+  }
+  const showSuggestions = focused && suggestions.length > 0;
   const pages = Math.max(1, Math.ceil(result.total / result.pageSize));
   function pageUrl(page: number) {
     const params = new URLSearchParams();
@@ -53,17 +186,64 @@ export function Library({
   }
   return (
     <div className="catalog-browser">
-      <form action={basePath} method="get" className="catalog-search-form">
+      <form
+        action={basePath}
+        method="get"
+        className="catalog-search-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          navigate(draftRef.current);
+          setFocused(false);
+        }}
+      >
         <div className="library-search">
           <Search size={21} />
           <label className="sr-only" htmlFor="library-query">
             Search the library
           </label>
           <input
-            key={query.q || ""}
             id="library-query"
             name="q"
-            defaultValue={query.q || ""}
+            value={text}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={showSuggestions}
+            aria-controls="library-suggestions"
+            aria-activedescendant={
+              showSuggestions && active >= 0
+                ? `suggestion-${active}`
+                : undefined
+            }
+            autoComplete="off"
+            onChange={(event) => {
+              change("q", event.target.value);
+              setFocused(true);
+            }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                setFocused(false);
+                setActive(-1);
+              } else if (
+                showSuggestions &&
+                (event.key === "ArrowDown" || event.key === "ArrowUp")
+              ) {
+                event.preventDefault();
+                setActive((value) =>
+                  event.key === "ArrowDown"
+                    ? (value + 1) % suggestions.length
+                    : (value - 1 + suggestions.length) % suggestions.length,
+                );
+              } else if (
+                event.key === "Enter" &&
+                showSuggestions &&
+                active >= 0
+              ) {
+                event.preventDefault();
+                choose(suggestions[active].href);
+              }
+            }}
             placeholder="Search lessons, teachers, or topics…"
             maxLength={200}
           />
@@ -79,7 +259,40 @@ export function Library({
           >
             <SlidersHorizontal size={18} /> Filters
           </button>
+          {showSuggestions && (
+            <div
+              id="library-suggestions"
+              role="listbox"
+              aria-label="Search suggestions"
+              className="search-suggestions"
+            >
+              {suggestions.map((item, index) => (
+                <button
+                  type="button"
+                  key={item.href}
+                  id={`suggestion-${index}`}
+                  role="option"
+                  aria-selected={active === index}
+                  className={active === index ? "suggestion-active" : ""}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => choose(item.href)}
+                >
+                  <strong>{item.title}</strong>
+                  <small>{item.detail}</small>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
+        <span className="sr-only" role="status" aria-live="polite">
+          {pending
+            ? "Updating lessons…"
+            : suggestionsLoading
+              ? "Finding suggestions…"
+              : showSuggestions
+                ? `${suggestions.length} suggestions available. Use arrow keys to explore.`
+                : ""}
+        </span>
         <div className="catalog-filter-panel">
           <aside
             id="library-filters"
@@ -87,16 +300,26 @@ export function Library({
           >
             <div className="filter-heading">
               <h2>Refine your search</h2>
-              <Link href={basePath}>Reset</Link>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = { sort: fixedCategory ? "oldest" : undefined };
+                  draftRef.current = next;
+                  setDraft(next);
+                  navigate(next);
+                }}
+              >
+                Reset
+              </button>
             </div>
             {!fixedTeacher && (
               <label htmlFor="teacher-filter">
                 Teacher
                 <select
-                  key={query.teacher || ""}
                   id="teacher-filter"
                   name="teacher"
-                  defaultValue={query.teacher || ""}
+                  value={draft.teacher || ""}
+                  onChange={(event) => change("teacher", event.target.value)}
                 >
                   <option value="">All teachers</option>
                   {result.facets.teachers.map((value) => (
@@ -111,10 +334,14 @@ export function Library({
               <label htmlFor="collection-filter">
                 Course or series
                 <select
-                  key={query.category || query.collection || ""}
                   id="collection-filter"
                   name="category"
-                  defaultValue={query.category || query.collection || ""}
+                  value={draft.category || draft.collection || ""}
+                  onChange={(event) => {
+                    const next = { ...draftRef.current, collection: undefined };
+                    draftRef.current = next;
+                    change("category", event.target.value);
+                  }}
                 >
                   <option value="">All collections</option>
                   {result.facets.collections.map((value) => (
@@ -128,10 +355,10 @@ export function Library({
             <label htmlFor="topic-filter">
               Topic or parsha
               <select
-                key={query.topic || ""}
                 id="topic-filter"
                 name="topic"
-                defaultValue={query.topic || ""}
+                value={draft.topic || ""}
+                onChange={(event) => change("topic", event.target.value)}
               >
                 <option value="">All topics</option>
                 {result.facets.topics.map((value) => (
@@ -144,10 +371,10 @@ export function Library({
             <label htmlFor="format-filter">
               Format
               <select
-                key={query.format || ""}
                 id="format-filter"
                 name="format"
-                defaultValue={query.format || ""}
+                value={draft.format || ""}
+                onChange={(event) => change("format", event.target.value)}
               >
                 <option value="">All formats</option>
                 <option>Audio</option>
@@ -157,10 +384,10 @@ export function Library({
             <label htmlFor="sort-filter">
               Sort by
               <select
-                key={query.sort || ""}
                 id="sort-filter"
                 name="sort"
-                defaultValue={query.sort || (query.q ? "relevance" : "newest")}
+                value={draft.sort || (draft.q ? "relevance" : "newest")}
+                onChange={(event) => change("sort", event.target.value)}
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
@@ -168,13 +395,10 @@ export function Library({
                 <option value="relevance">Search relevance</option>
               </select>
             </label>
-            <button type="submit" className="button">
-              Apply filters
-            </button>
           </aside>
         </div>
       </form>
-      <div className="catalog-results">
+      <div className="catalog-results" aria-busy={pending}>
         <div className="results-bar">
           <p aria-live="polite">
             <strong>{result.total.toLocaleString()}</strong>{" "}

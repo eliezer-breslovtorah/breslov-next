@@ -40,6 +40,9 @@ export default async function Admin({
         </Link>
         <Link className="button" href="/admin/taxonomy">
           Categories and teachers
+        </Link>{" "}
+        <Link className="button" href="/admin/inquiries">
+          Contact inquiries
         </Link>
       </p>
       <form>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { donationForms } from "@/lib/donations";
+import { nativePages } from "@/lib/page-navigation";
 import { getPublicPages } from "@/lib/catalog";
 export const dynamic = "force-dynamic";
 export default function Page() {
@@ -19,7 +20,7 @@ export default function Page() {
           .map((f) => (
             <Link
               className="support-card"
-              href={`/donate/${f.slug}`}
+              href={nativePages[f.slug] || `/donate/${f.slug}`}
               key={f.slug}
             >
               <h2>{f.title}</h2>
@@ -42,7 +43,9 @@ export default function Page() {
             .map((p) => (
               <Link
                 className="support-card"
-                href={`/pages/${encodeURIComponent(p.slug)}`}
+                href={
+                  nativePages[p.slug] || `/pages/${encodeURIComponent(p.slug)}`
+                }
                 key={p.slug}
               >
                 <h3>{p.title}</h3>
