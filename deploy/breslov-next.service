@@ -1,0 +1,19 @@
+[Unit]
+Description=Breslov Torah Next.js app
+After=network.target
+
+[Service]
+Type=simple
+User=breslov-next
+Group=breslov-next
+WorkingDirectory=/srv/breslov-next
+Environment=NODE_ENV=production
+EnvironmentFile=/etc/breslov-next.env
+ExecStart=/usr/bin/node /srv/breslov-next/scripts/serve.mjs
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

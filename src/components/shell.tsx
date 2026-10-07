@@ -10,7 +10,8 @@ const links = [
   ["Library", "/library"],
   ["Courses", "/courses"],
   ["Teachers", "/teachers"],
-  ["About", "/about"],
+  ["Dedications", "/dedications"],
+  ["Account", "/account"],
 ];
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -62,7 +63,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             </Link>
             <a
               className="donate-link"
-              href="https://donate.breslovtorah.com/"
+              href="/donate"
               target="_blank"
               rel="noreferrer"
             >
@@ -96,22 +97,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Link href="/library">Shiurim library</Link>
             <Link href="/courses">Learning courses</Link>
             <Link href="/teachers">Our teachers</Link>
+            <Link href="/calendar">Class schedule</Link>
+            <Link href="/community">Community &amp; prayer</Link>
+            <Link href="/blog">Articles &amp; updates</Link>
+            <Link href="/newsletter">Breslov Bridge newsletter</Link>
           </div>
           <div>
             <h3>Connect</h3>
             <Link href="/about">About Breslov Torah</Link>
-            <a
-              href="https://www.breslovtorah.com/contact-rabbi-maimon/"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <Link href="/dedications">Dedicate a teaching</Link>
+            <Link href="/account">My learning</Link>
+            <a href="/contact" target="_blank" rel="noreferrer">
               Contact us <ArrowUpRight size={13} />
             </a>
-            <a
-              href="https://donate.breslovtorah.com/"
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href="/donate" target="_blank" rel="noreferrer">
               Support the learning <ArrowUpRight size={13} />
             </a>
           </div>

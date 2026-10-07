@@ -7,3 +7,11 @@ test-results/
 playwright-report/
 
 .homepage-build/
+
+data/
+*.sqlite*
+*.tsbuildinfo
+.app-build/
+
+error_log
+__pycache__/

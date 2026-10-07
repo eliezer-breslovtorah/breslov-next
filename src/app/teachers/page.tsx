@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { teachers } from "@/lib/catalog";
+import { getTeachers } from "@/lib/catalog";
+export const dynamic = "force-dynamic";
 import { ArrowRight } from "lucide-react";
 export const metadata = { title: "Our teachers" };
 export default function Page() {
+  const teachers = getTeachers();
   return (
     <div className="page-wrap">
       <header className="page-heading">

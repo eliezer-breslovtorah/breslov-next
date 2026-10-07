@@ -1,5 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./support.css";
+import "./library.css";
+import "./admin.css";
+import { getCurrentUser } from "@/lib/auth";
 import { Shell } from "@/components/shell";
 import { MediaProvider } from "@/components/media-provider";
 export const metadata: Metadata = {
@@ -10,13 +14,14 @@ export const metadata: Metadata = {
   description:
     "Discover the teachings of Rebbe Nachman through the Breslov Torah lesson library.",
 };
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const user = await getCurrentUser();
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <MediaProvider>
+        <MediaProvider signedIn={!!user}>
           <Shell>{children}</Shell>
         </MediaProvider>
       </body>

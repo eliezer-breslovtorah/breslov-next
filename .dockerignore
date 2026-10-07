@@ -9,3 +9,7 @@ qa-artifacts
 *.log
 
 .homepage-build
+
+data
+.app-build
+*.sqlite*

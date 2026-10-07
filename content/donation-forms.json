@@ -1,0 +1,289 @@
+[
+  {
+    "id": 2,
+    "slug": "contact",
+    "title": "Contact Form",
+    "url": "https://donate.breslovtorah.com/contact/",
+    "group": "Community"
+  },
+  {
+    "id": 5,
+    "slug": "donate-by-credit-card",
+    "title": "Donate by Credit Card Form",
+    "url": "https://donate.breslovtorah.com/donate/donate-by-credit-card/",
+    "group": "Support"
+  },
+  {
+    "id": 64,
+    "slug": "donate-by-paypal",
+    "title": "Donate by PayPal",
+    "url": "https://donate.breslovtorah.com/donate/donate-by-paypal/",
+    "group": "Support"
+  },
+  {
+    "id": 17,
+    "slug": "friends-of-breslov-torah-membership",
+    "title": "$18 - Friends of Breslov Torah Membership",
+    "url": "https://donate.breslovtorah.com/monthly-memberships/friends-of-breslov-torah-membership/",
+    "group": "Membership"
+  },
+  {
+    "id": 7,
+    "slug": "silver-membership",
+    "title": "$45 - Silver Membership",
+    "url": "https://donate.breslovtorah.com/monthly-memberships/silver-membership/",
+    "group": "Membership"
+  },
+  {
+    "id": 8,
+    "slug": "gold-membership",
+    "title": "$120 - Gold Membership",
+    "url": "https://donate.breslovtorah.com/monthly-memberships/gold-membership/",
+    "group": "Membership"
+  },
+  {
+    "id": 9,
+    "slug": "diamond-membership",
+    "title": "$360 - Diamond Membership",
+    "url": "https://donate.breslovtorah.com/monthly-memberships/diamond-membership/",
+    "group": "Membership"
+  },
+  {
+    "id": 18,
+    "slug": "torah-shiur",
+    "title": "Dedicate a Torah Shiur",
+    "url": "https://donate.breslovtorah.com/dedications/torah-shiur/",
+    "group": "Dedications"
+  },
+  {
+    "id": 19,
+    "slug": "weekly-parsha-newsletter",
+    "title": "Dedicate the Weekly Parsha Newsletter",
+    "url": "https://donate.breslovtorah.com/dedications/weekly-parsha-newsletter/",
+    "group": "Dedications"
+  },
+  {
+    "id": 20,
+    "slug": "dedicate-a-parsha-video",
+    "title": "Restoration of a Shiur by Rabbi Zvi Aryeh Rosenfeld z\"l",
+    "url": "https://donate.breslovtorah.com/dedications/dedicate-a-parsha-video/",
+    "group": "Dedications"
+  },
+  {
+    "id": 21,
+    "slug": "day-of-streaming-torah-from-our-website",
+    "title": "Dedicate a Day of Streaming Torah on Our Website",
+    "url": "https://donate.breslovtorah.com/dedications/day-of-streaming-torah-from-our-website/",
+    "group": "Dedications"
+  },
+  {
+    "id": 22,
+    "slug": "support-breslov-community-leadership-kollel",
+    "title": "Support Breslov Community Leadership (Kollel Student)",
+    "url": "https://donate.breslovtorah.com/dedications/support-breslov-community-leadership-kollel/",
+    "group": "Dedications"
+  },
+  {
+    "id": 23,
+    "slug": "torah-study-at-our-kollel",
+    "title": "Dedicate Torah Study at Our Kollel",
+    "url": "https://donate.breslovtorah.com/dedications/torah-study-at-our-kollel/",
+    "group": "Dedications"
+  },
+  {
+    "id": 24,
+    "slug": "shabbos-food-basket",
+    "title": "Shabbos Food Basket",
+    "url": "https://donate.breslovtorah.com/dedications/shabbos-food-basket/",
+    "group": "Dedications"
+  },
+  {
+    "id": 25,
+    "slug": "bar-mitzvah-tefillin",
+    "title": "Bar Mitzvah Tefillin",
+    "url": "https://donate.breslovtorah.com/dedications/bar-mitzvah-tefillin/",
+    "group": "Dedications"
+  },
+  {
+    "id": 26,
+    "slug": "gift-to-a-newlywed-couple",
+    "title": "Gift to a Newlywed Couple",
+    "url": "https://donate.breslovtorah.com/dedications/gift-to-a-newlywed-couple/",
+    "group": "Dedications"
+  },
+  {
+    "id": 51,
+    "slug": "pidyon-nefesh-a-special-prayer-for-you",
+    "title": "Pidyon Nefesh - A Special Prayer for You (1)",
+    "url": "https://donate.breslovtorah.com/tefilah-prayer-for-you/pidyon-nefesh-a-special-prayer-for-you/",
+    "group": "Prayer"
+  },
+  {
+    "id": 28,
+    "slug": "40-days-of-prayer-by-a-breslov-minyan-at-the-kosel",
+    "title": "40 Days of Prayer by a Breslov Minyan at the Kosel",
+    "url": "https://donate.breslovtorah.com/tefilah-prayer-for-you/40-days-of-prayer-by-a-breslov-minyan-at-the-kosel/",
+    "group": "Prayer"
+  },
+  {
+    "id": 29,
+    "slug": "holiday-gift",
+    "title": "Holiday Gift",
+    "url": "https://donate.breslovtorah.com/holiday-donations/holiday-gift/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 31,
+    "slug": "maos-chitim-charity-fund-for-pesach",
+    "title": "Maos Chitim - Charity for Pesach",
+    "url": "https://donate.breslovtorah.com/holiday-donations/maos-chitim-charity-fund-for-pesach/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 52,
+    "slug": "pidyon-nefesh-prayer-for-you-in-uman-erev-rosh-hashanah",
+    "title": "Pidyon Nefesh in Uman - Rosh Hashanah 5787 (2026)",
+    "url": "https://donate.breslovtorah.com/tefilah-prayer-for-you/pidyon-nefesh-prayer-for-you-in-uman-erev-rosh-hashanah/",
+    "group": "Prayer"
+  },
+  {
+    "id": 39,
+    "slug": "matanos-levyonim-charity-for-purim",
+    "title": "Matanos Levyonim - Charity for Purim",
+    "url": "https://donate.breslovtorah.com/holiday-donations/matanos-levyonim-charity-for-purim/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 40,
+    "slug": "prayer-for-you-in-meron-on-lag-beomer",
+    "title": "Prayer for You in Meron on Lag BeOmer",
+    "url": "https://donate.breslovtorah.com/holiday-donations/prayer-for-you-in-meron-on-lag-beomer/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 41,
+    "slug": "yahrzeit-commemoration-for-rabbi-rosenfeld-zl",
+    "title": "Rabbi Rosenfeld z\"l Yahrzeit",
+    "url": "https://donate.breslovtorah.com/donate/yahrzeit-commemoration-for-rabbi-rosenfeld-zl/",
+    "group": "Support"
+  },
+  {
+    "id": 42,
+    "slug": "yahrzeit-commemoration-for-rabbi-rosenfeld-zl-non-rsvp",
+    "title": "Rabbi Rosenfeld z\"l Yahrzeit - Non-RSVP Version",
+    "url": "https://donate.breslovtorah.com/donate/yahrzeit-commemoration-for-rabbi-rosenfeld-zl-non-rsvp/",
+    "group": "Support"
+  },
+  {
+    "id": 63,
+    "slug": "ohravrohom",
+    "title": "Ohr Avrohom",
+    "url": "https://donate.breslovtorah.com/donate/ohravrohom/",
+    "group": "Support"
+  },
+  {
+    "id": 44,
+    "slug": "the-matchmakers-chair",
+    "title": "Matchmaker Form",
+    "url": "https://donate.breslovtorah.com/the-matchmakers-chair/",
+    "group": "Community"
+  },
+  {
+    "id": 34,
+    "slug": "sponsor-a-lunch-and-learn",
+    "title": "Sponsor a Lunch and Learn",
+    "url": "https://donate.breslovtorah.com/dedications/sponsor-a-lunch-and-learn/",
+    "group": "Dedications"
+  },
+  {
+    "id": 35,
+    "slug": "appointing-a-representative-to-say-kaddish-in-memory-of-a-loved-one",
+    "title": "Appointing a Representative to Say Kaddish in Memory of a Loved One",
+    "url": "https://donate.breslovtorah.com/tefilah-prayer-for-you/appointing-a-representative-to-say-kaddish-in-memory-of-a-loved-one/",
+    "group": "Prayer"
+  },
+  {
+    "id": 46,
+    "slug": "make-a-holiday-gift",
+    "title": "Holiday Gift (social media)",
+    "url": "https://donate.breslovtorah.com/holiday-donations/make-a-holiday-gift/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 47,
+    "slug": "campaign-matanos-levyonim-gifts-to-the-needy-distributed-for-purim",
+    "title": "Matanos Levyonim - Charity for Purim (Bigger Donors)",
+    "url": "https://donate.breslovtorah.com/holiday-donations/campaign-matanos-levyonim-gifts-to-the-needy-distributed-for-purim/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 48,
+    "slug": "maos-chitim-campaign-charity-fund-for-pesach",
+    "title": "Maos Chitim - Charity for Pesach (for social media)",
+    "url": "https://donate.breslovtorah.com/holiday-donations/maos-chitim-campaign-charity-fund-for-pesach/",
+    "group": "Holiday giving"
+  },
+  {
+    "id": 43,
+    "slug": "rabbi-rosenfeld-zl-yahrzeit-commemoration-rsvp",
+    "title": "Rabbi Rosenfeld z\"l Yahrzeit Commemoration RSVP",
+    "url": "https://donate.breslovtorah.com/rabbi-rosenfeld-zl-yahrzeit-commemoration-rsvp/",
+    "group": "Support"
+  },
+  {
+    "id": 55,
+    "slug": "rabbi-rosenfeld-zl-yahrzeit-commemoration-sponsorship-opportunities",
+    "title": "Rabbi Rosenfeld z\"l Yahrzeit Sponsorship Opportunities 5782 (2021)",
+    "url": "https://donate.breslovtorah.com/rabbi-rosenfeld-zl-yahrzeit-commemoration-sponsorship-opportunities/",
+    "group": "Support"
+  },
+  {
+    "id": 56,
+    "slug": "matchmaker-follow-up-questionnaire",
+    "title": "Follow Up Questionnaire - Matchmaker",
+    "url": "https://donate.breslovtorah.com/matchmaker-follow-up-questionnaire/",
+    "group": "Community"
+  },
+  {
+    "id": 57,
+    "slug": "emergency-fund-for-ukrainian-jews",
+    "title": "Emergency Fund for Ukrainian Jews",
+    "url": "https://donate.breslovtorah.com/emergency-fund-for-ukrainian-jews/",
+    "group": "Support"
+  },
+  {
+    "id": 58,
+    "slug": "sponsorship",
+    "title": "Trip Sponsorship",
+    "url": "https://donate.breslovtorah.com/sponsorship/",
+    "group": "Support"
+  },
+  {
+    "id": 59,
+    "slug": "prayer-for-you-in-uman-a-pidyon-nefesh-on-erev-rosh-hashanah-5783",
+    "title": "Prayer for You in Uman - Rosh Hashanah 5783 - GEDALE",
+    "url": "https://donate.breslovtorah.com/prayer-for-you-in-uman-a-pidyon-nefesh-on-erev-rosh-hashanah-5783/",
+    "group": "Support"
+  },
+  {
+    "id": 52,
+    "slug": "pidyon-nefesh-prayer-for-you-and-your-family-in-uman-erev-rosh-hashanah",
+    "title": "Pidyon Nefesh in Uman - Rosh Hashanah 5787 (2026)",
+    "url": "https://donate.breslovtorah.com/tefilah-prayer-for-you/pidyon-nefesh-prayer-for-you-and-your-family-in-uman-erev-rosh-hashanah/",
+    "group": "Prayer"
+  },
+  {
+    "id": 62,
+    "slug": "rosh-hashanah-5783-pidyon-nefesh-prayer-for-you-in-uman",
+    "title": "Prayer for You in Uman - Rosh Hashanah 5783 - Michael B",
+    "url": "https://donate.breslovtorah.com/rosh-hashanah-5783-pidyon-nefesh-prayer-for-you-in-uman/",
+    "group": "Support"
+  },
+  {
+    "id": 66,
+    "slug": "rav-michel-dorfman-zal-yahrzeit",
+    "title": "Rav Michel Dorfman z\"l Yahrzeit",
+    "url": "https://donate.breslovtorah.com/rav-michel-dorfman-zal-yahrzeit/",
+    "group": "Support"
+  }
+]

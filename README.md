@@ -1,17 +1,18 @@
 # Breslov Torah
 
-Standalone Next.js and TypeScript UI, portable to the team’s own servers. WordPress and a hosted build service are not required to run this project.
+A self-hosted Next.js app with the Breslov Torah teaching library, indexed search, original-file playback, accounts, and a staff publishing dashboard. SQLite keeps deployment simple. The existing WordPress sites remain unchanged.
 
-## Run locally
+## Run
 
-Use Node.js 22 LTS.
+Use Node.js 22 (22.13 or newer, below 23).
 
 ```sh
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-Open http://127.0.0.1:3000. For production:
+Open http://127.0.0.1:3000. For production, configure the environment, then:
 
 ```sh
 npm run typecheck
@@ -19,54 +20,41 @@ npm run build
 npm start
 ```
 
-The start script serves Next.js standalone output and binds to localhost; place a reverse proxy in front of it. Set `PORT` and `APP_HOST` to override the listener. To expose it directly inside a container, use the Docker image below.
+`npm start` binds to localhost by default. Put an HTTPS reverse proxy in front of it; set `PORT` and `APP_HOST` for another listener. Production environment variables must be supplied to the running process; the standalone start script does not load `.env.local` automatically.
 
-## Self-host with Docker
+## Included
 
-```sh
-docker build -t breslov-torah .
-docker run --rm -p 3000:3000 breslov-torah
-```
+- 7,243 lessons, descriptions and taxonomy; 384 collections; five teachers; 47 imported public pages.
+- Server-side search, filters, pagination, courses and teacher browsing.
+- Audio/video playback from original files, seeking and downloads; protected media requires the appropriate account access.
+- Staff lesson publishing, media uploads, categories, teachers and membership management.
+- Accounts, saved lessons and listening history, with compatibility for imported WordPress password hashes.
+- Donation and dedication pages that reuse the existing Gravity Forms payment service.
 
-Terminate HTTPS at your reverse proxy. The Docker image uses Next.js standalone output and includes static assets. No vendor deployment account is required.
+Some original recordings are missing or require the existing site's access flow. The import report documents these gaps. Donation processing remains on `donate.breslovtorah.com`; this app does not create a replacement payment processor or automatically synchronize future subscription changes.
 
-## Code and content
+## Code and operations
 
-- `src/app`: pages and global styles.
-- `src/components`: reusable UI and interactions.
-- `src/lib/content.ts`: initial typed public catalog metadata.
-- `src/lib/catalog.ts`: server-only adapter for a reviewed import.
-- `scripts/import-wordpress.py`: portable WordPress WXR metadata importer.
-- `public/images`: assets reused from the existing project.
-- `docs/MIGRATION.md`: production migration requirements and source notes.
+- `src/app`: public pages, account/admin pages and API routes.
+- `src/components`: shared UI and playback.
+- `src/lib/store.ts`: SQLite catalog, search and persistence.
+- `src/lib/auth.ts`: sessions, passwords and account access.
+- `content/catalog.json`: public seed catalog, loaded once into an empty database.
+- `content/homepage.json`: featured teaching, clips and guided paths.
+- `data/`: private runtime database, uploads and optional migration manifests; excluded from Git and source packages.
+- `scripts/export-live-wordpress.py`: read-only extraction from the existing installations.
+- [Team handoff](docs/HANDOFF.md): configuration, migration, backups and deployment.
+- [WordPress audit](docs/WORDPRESS-AUDIT.md): source inventory and migration findings.
 
-This delivery contains an initial curated catalog, not the full WordPress database. Legacy links provide access to existing recordings and account services while backend migration is planned. No imported memberships, payment processing, protected streaming service, or staff CMS is claimed. Read the migration document before replacing the live site. Update content.ts to edit the initial catalog; a database or CMS adapter can later provide the same types without coupling UI components to WordPress.
+Editing seed JSON does not overwrite an existing database. Staff edits persist without rebuilding. Homepage configuration and code changes require a rebuild.
 
 ## Verification
 
-`npm run typecheck` validates TypeScript; `npm run build` verifies the production bundle. `npm run qa` runs browser QA when its browser dependencies are installed. Screenshots and verification notes supplied with the delivery describe the tested breakpoints.
-
-## Browser checks and screenshots
-
-Run the app in one terminal, then in another:
-
 ```sh
+npm run typecheck
+npm run build
 npx playwright install chromium
-npm run qa
+QA_BASE_URL=http://127.0.0.1:3000 npm run qa
 ```
 
-Set `QA_BASE_URL=http://127.0.0.1:3001` to test a production server on another port. QA covers 1440px, 768px, 390px, and 320px widths. Screenshots are written to `qa/screenshots/`. The included Dockerfile has not been executed in this environment.
-
-## Import a reviewed catalog
-
-```sh
-python3 scripts/import-wordpress.py /secure/wordpress-export.xml --output ./data
-CONTENT_CATALOG_PATH=./data/public-catalog.json npm run build
-CONTENT_CATALOG_PATH=./data/public-catalog.json npm start
-```
-
-Review the migration report and resolve duplicate slugs, teacher mappings, collection URLs, and assets before building. The catalog is a build input, so rebuild after edits. Membership, protected playback, forms, and the complete staff editing workflow remain migration work; this app is a UI preview and must not yet replace production.
-
-## Homepage editing
-
-The featured teaching, public short clips, and guided course choices are configured in `content/homepage.json`. See [homepage editing and media provenance](docs/HOMEPAGE.md). Rebuild and restart after changing these settings.
+Browser checks cover desktop, tablet and mobile at 1440, 768, 390 and 320 pixels. The Dockerfile supports a persistent data volume; Docker execution must be verified on the destination server.

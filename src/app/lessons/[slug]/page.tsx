@@ -1,10 +1,23 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Headphones, ArrowRight, BookOpen } from "lucide-react";
-import { lessons } from "@/lib/catalog";
+import { getLesson, getLessons, getMedia } from "@/lib/catalog";
+import { getCurrentUser, canAccessMembers } from "@/lib/auth";
 import { LessonCard } from "@/components/lesson-card";
-export function generateStaticParams() {
-  return lessons.map((l) => ({ slug: l.slug }));
+import { BookmarkButton } from "@/components/account-forms";
+import { getLessonMediaAvailability } from "@/lib/media-availability";
+import { LessonPlayback } from "@/components/lesson-playback";
+export const dynamic = "force-dynamic";
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const l = getLesson(slug);
+  return {
+    title: l?.title || "Teaching",
+    description: l?.description.slice(0, 160),
+  };
 }
 export default async function Page({
   params,
@@ -12,8 +25,32 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const lesson = lessons.find((l) => l.slug === slug);
+  const lesson = getLesson(slug);
   if (!lesson) notFound();
+  const user = await getCurrentUser();
+  const media = lesson.id ? getMedia(lesson.id) : undefined;
+  const effectiveAccess = lesson.access || media?.access || "legacy";
+  const availability = lesson.id
+    ? await getLessonMediaAvailability(lesson.id)
+    : "missing";
+  const native =
+    availability === "available" &&
+    media &&
+    effectiveAccess !== "legacy" &&
+    (effectiveAccess === "public" || canAccessMembers(user)) &&
+    media.access !== "legacy" &&
+    (media.access === "public" || canAccessMembers(user));
+  const track = {
+    id: lesson.id || lesson.slug,
+    title: lesson.title,
+    speaker: lesson.speaker,
+    duration: lesson.duration || "",
+    audioSrc: `/api/media/${encodeURIComponent(lesson.id || lesson.slug)}`,
+    pageUrl: `/lessons/${encodeURIComponent(lesson.slug)}`,
+  };
+  const related = getLessons({ teacher: lesson.speaker, pageSize: 5 })
+    .items.filter((l) => l.slug !== lesson.slug)
+    .slice(0, 4);
   return (
     <div className="page-wrap">
       <nav className="breadcrumb">
@@ -27,60 +64,119 @@ export default async function Page({
           <h1>{lesson.title}</h1>
           <p className="detail-teacher">{lesson.speaker}</p>
           <div className="meta">
-            <span>
-              <Headphones size={16} />
-              {lesson.format}
-            </span>
+            <span>{lesson.format}</span>
             {lesson.duration && <span>{lesson.duration}</span>}
-            <span>{lesson.topic}</span>
+            {lesson.publishedAt && (
+              <time dateTime={lesson.publishedAt}>
+                {new Date(lesson.publishedAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+            )}
           </div>
-          <div className="prose">
+          <div className="lesson-category-list">
+            {(lesson.categories || [])
+              .filter((t) => t.taxonomy !== "authors")
+              .map((t) => (
+                <Link
+                  key={`${t.taxonomy}-${t.id}`}
+                  href={`/library?category=${encodeURIComponent(t.slug)}`}
+                >
+                  {t.title}
+                </Link>
+              ))}
+          </div>
+          {lesson.dedication && (
+            <aside className="lesson-dedication">
+              <h2>Dedication</h2>
+              <p>{lesson.dedication}</p>
+            </aside>
+          )}
+          {lesson.videoEmbedUrl &&
+          (effectiveAccess === "public" ||
+            (effectiveAccess === "members" && canAccessMembers(user))) ? (
+            <LessonPlayback
+              track={track}
+              videoEmbedUrl={lesson.videoEmbedUrl}
+            />
+          ) : native ? (
+            <LessonPlayback
+              track={track}
+              videoSrc={lesson.format === "Video" ? track.audioSrc : undefined}
+            />
+          ) : (
+            <div className="playback-panel">
+              <h2>
+                {effectiveAccess === "members"
+                  ? "Member teaching"
+                  : "Listen to this teaching"}
+              </h2>
+              <p>
+                {effectiveAccess === "members"
+                  ? "Sign in with an active membership to play this recording."
+                  : availability !== "available"
+                    ? "This recording is currently unavailable. Ask our team for help finding or restoring it."
+                    : "This recording needs an access review. Contact our team for help."}
+              </p>
+              <div className="native-play-actions">
+                {effectiveAccess === "members" && (
+                  <Link
+                    className="button"
+                    href={`/account?next=${encodeURIComponent(`/lessons/${lesson.slug}`)}`}
+                  >
+                    Sign in to listen
+                  </Link>
+                )}
+                <Link
+                  className="button button-secondary"
+                  href={`/contact?subject=${encodeURIComponent(`Recording help: ${lesson.title}`)}`}
+                >
+                  Ask for recording help
+                </Link>
+              </div>
+            </div>
+          )}
+          <article className="prose">
             <h2>About this lesson</h2>
-            <p>{lesson.description}</p>
-          </div>
-          <div className="playback-panel">
-            <Headphones size={28} />
-            <h2>Listen to this teaching</h2>
-            <p>
-              During the site transition, playback and member access remain
-              available through the existing lesson page.
-            </p>
-            <a className="button" href={lesson.legacyUrl}>
-              Open lesson &amp; listen <ArrowRight size={18} />
-            </a>
-          </div>
+            {lesson.bodyText ? (
+              <div className="lesson-body">{lesson.bodyText}</div>
+            ) : (
+              <p>{lesson.description}</p>
+            )}
+          </article>
         </div>
         <aside className="lesson-aside">
           <img src={lesson.image} alt={lesson.speaker} />
           <div>
-            <BookOpen size={24} />
-            <h2>Learning that stays with you</h2>
-            <p>
-              Take a moment to reflect, revisit the teaching, and bring it into
-              your day.
-            </p>
-            <a
-              href={`https://donate.breslovtorah.com/dedications/torah-shiur?shiurname=${encodeURIComponent(lesson.title)}`}
+            <h2>Share the light of Torah</h2>
+            <p>Honor someone special by sponsoring a teaching.</p>
+            <Link
+              className="button"
+              href={`/donate/torah-shiur?lesson=${encodeURIComponent(lesson.title)}`}
             >
-              Dedicate a shiur ↗
-            </a>
+              Dedicate this lesson
+            </Link>
+            <p>
+              {user && lesson.id ? (
+                <BookmarkButton lessonId={lesson.id} />
+              ) : (
+                <Link href="/account">Sign in to save this lesson →</Link>
+              )}
+            </p>
           </div>
         </aside>
       </section>
       <section className="section">
         <div className="section-heading">
           <h2>Continue exploring</h2>
-          <Link href="/library">
-            Browse the library <ArrowRight size={16} />
-          </Link>
+          <Link href="/library">Browse the library →</Link>
         </div>
         <div className="card-grid">
-          {lessons
-            .filter((l) => l.slug !== slug)
-            .slice(0, 4)
-            .map((l) => (
-              <LessonCard key={l.slug} lesson={l} />
-            ))}
+          {related.map((l) => (
+            <LessonCard key={l.slug} lesson={l} />
+          ))}
         </div>
       </section>
     </div>

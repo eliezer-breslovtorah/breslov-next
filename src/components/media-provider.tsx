@@ -17,6 +17,7 @@ export type PublicTrack = {
   duration: string;
   audioSrc: string;
   pageUrl: string;
+  fallbackUrl?: string;
 };
 type MediaContextValue = {
   track: PublicTrack | null;
@@ -37,15 +38,41 @@ function timeLabel(seconds: number) {
   if (!Number.isFinite(seconds)) return "0:00";
   return `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
 }
-export function MediaProvider({ children }: { children: ReactNode }) {
+export function MediaProvider({
+  children,
+  signedIn = false,
+}: {
+  children: ReactNode;
+  signedIn?: boolean;
+}) {
   const audio = useRef<HTMLAudioElement>(null);
   const request = useRef(0);
+  const lastSaved = useRef(0);
   const [track, setTrack] = useState<PublicTrack | null>(null);
   const [playing, setPlaying] = useState(false);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState("");
+  function persistProgress(force = false) {
+    if (
+      !signedIn ||
+      !track ||
+      !audio.current ||
+      !track.id.match(/^(wp-|[a-f0-9]{8}-)/)
+    )
+      return;
+    if (!force && Date.now() - lastSaved.current < 15000) return;
+    lastSaved.current = Date.now();
+    void fetch("/api/account/history", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lessonId: track.id,
+        position: audio.current.currentTime,
+      }),
+    }).catch(() => {});
+  }
   function attemptPlay() {
     const element = audio.current;
     if (!element) return;
@@ -113,9 +140,15 @@ export function MediaProvider({ children }: { children: ReactNode }) {
           ref={audio}
           preload="none"
           onPlay={() => setPlaying(true)}
-          onPause={() => setPlaying(false)}
+          onPause={() => {
+            setPlaying(false);
+            persistProgress(true);
+          }}
           onEnded={() => setPlaying(false)}
-          onTimeUpdate={() => setPosition(audio.current?.currentTime ?? 0)}
+          onTimeUpdate={() => {
+            setPosition(audio.current?.currentTime ?? 0);
+            persistProgress();
+          }}
           onDurationChange={() => {
             const value = audio.current?.duration ?? 0;
             setDuration(Number.isFinite(value) ? value : 0);
@@ -172,14 +205,9 @@ export function MediaProvider({ children }: { children: ReactNode }) {
               />
               <span>{duration ? timeLabel(duration) : track.duration}</span>
             </div>
-            <a
-              href={track.pageUrl}
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Open original lesson"
-            >
+            <Link href={track.pageUrl} aria-label="Open lesson">
               <ExternalLink size={18} />
-            </a>
+            </Link>
             <button
               type="button"
               onClick={close}
@@ -190,9 +218,11 @@ export function MediaProvider({ children }: { children: ReactNode }) {
             {error && (
               <p className="media-error" role="alert">
                 {error}{" "}
-                <a href={track.pageUrl} target="_blank" rel="noreferrer">
-                  Open original lesson
-                </a>
+                <Link
+                  href={`/contact?subject=${encodeURIComponent(`Recording help: ${track.title}`)}`}
+                >
+                  Ask for recording help
+                </Link>
               </p>
             )}
           </section>
