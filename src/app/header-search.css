@@ -1,0 +1,104 @@
+.header-search-trigger {
+  background: none;
+  border: 0;
+  color: var(--ink);
+  padding: 10px;
+  cursor: pointer;
+  min-width: 40px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+}
+.header-search-panel {
+  position: absolute;
+  top: calc(100% - 8px);
+  right: max(16px, calc((100vw - 1320px) / 2));
+  width: min(440px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 16px 50px #17252e24;
+  z-index: 45;
+}
+.header-search-panel label {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.header-search-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding-left: 10px;
+}
+.header-search-field input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  padding: 12px 0;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+}
+.header-search-field button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 40px;
+  min-height: 44px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.header-search-hint,
+.header-search-status {
+  font-size: 12px;
+  color: #59666d;
+  margin: 10px 0 0;
+}
+.header-search-panel ul {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  max-height: min(340px, 45dvh);
+  overflow-y: auto;
+}
+.header-search-panel li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.header-search-panel li span {
+  overflow-wrap: anywhere;
+}
+.header-search-panel li small {
+  color: #59666d;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.header-search-panel li:hover,
+.header-search-panel li.selected {
+  background: #f4efe4;
+}
+.header-search-trigger:focus-visible,
+.header-search-field:focus-within {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+@media (max-width: 480px) {
+  .header-search-panel {
+    padding: 16px;
+  }
+  .header-search-panel li {
+    font-size: 14px;
+  }
+}

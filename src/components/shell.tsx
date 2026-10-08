@@ -15,6 +15,7 @@ import {
   UserRound,
 } from "lucide-react";
 import "@/app/mobile-navigation.css";
+import { HeaderSearch } from "./header-search";
 
 const links = [
   ["Home", "/"],
@@ -96,13 +97,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
           <div className="header-actions">
-            <Link
-              href="/library"
-              className="search-link"
-              aria-label="Search the library"
-            >
-              <Search size={20} />
-            </Link>
+            <HeaderSearch />
             <a
               className="donate-link"
               href="/donate"
