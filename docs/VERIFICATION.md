@@ -37,3 +37,11 @@ A rapid filter regression check also covers changing two selectors in succession
 Final clean-build checks passed autocomplete and rapid filter/history interactions at all four viewport sizes. The combined Maimon + Video + oldest search decreased from about 5.3 seconds to under one second during local verification. The tested clean standalone build was installed on the isolated preview; original WordPress and donation homepages continued returning HTTP 200.
 
 Public HTTPS preview verification completed: **53 passed, 23 skipped**, across desktop (1440px), tablet (768px), mobile (390px), and small mobile (320px). Skipped tests require isolated writes or authenticated staff fixtures. No automated form submissions were sent to the shared preview.
+
+## Mobile navigation, compact tags, and lesson series (2026-10-08)
+
+The corrected reference https://breslov.therapidcaster.com was reviewed in mobile Chromium, including its five-tab bottom navigation and a lesson's series continuation list. Reference screenshot: `qa/references/rapidcaster-mobile.png`.
+
+Three agents produced separate feature commits for tags, mobile navigation, and series lists. New checks cover tag deduplication and keyboard expansion, five accessible mobile tabs and search focus, player/menu stacking, footer visibility, exact series membership, chronological previous/next links, current lesson highlighting, and pagination beyond 100 lessons. A series test's accessible-name selector was corrected to account for whitespace between text blocks; all twelve targeted menu/series checks then passed across desktop, tablet, mobile, and small mobile.
+
+Final public HTTPS preview suite: **69 passed, 23 skipped** across 1440px desktop, 768px tablet, 390px mobile, and 320px small mobile. Tests requiring isolated writes or authenticated staff fixtures remain skipped on the shared preview. A fresh archive extraction passed npm ci, typecheck, production build, and all 16 new feature checks. Application sources matched the deployed clean build. Reviewed screenshots include player/menu stacking, expanded tags, and series lists. Original WordPress still returned HTTP 200.

@@ -82,3 +82,9 @@ The app now includes the 24 published articles, newsletter archives and subscrip
 Contact, matchmaking, and newsletter requests are private in `/admin/inquiries`. Newsletter subscriptions require staff to add the address to the existing mailing service; no automatic delivery integration is configured. Back up the entire private `APP_DATA_DIR`, including inquiry attachments. Payment forms continue using the existing secure donation service. Nine unresolved historical references point to Contact; the missing original project brochure points to Projects. One archived article has no original body and displays an honest archive notice.
 
 Library filters update immediately, and typed search updates after a short debounce with keyboard-accessible lesson, teacher, and course suggestions.
+
+## Mobile navigation and lesson context (2026-10-08)
+
+The fixed mobile menu appears at 800px and below, with Home, Browse, Search, Courses, and My learning. Search focuses the library input. Audio controls sit above the menu, and measured player height reserves space for page content. Safe-area padding handles mobile device edges.
+
+Lesson tags show four unique categories initially, with keyboard-accessible expansion for the remainder. Series navigation uses explicit WordPress series/course memberships rather than topic tags. Each lesson includes previous/next links and a paginated oldest-first list with the current lesson highlighted. Calendar and broad audience/language categories are excluded from series inference. Original media and WordPress remain unchanged.

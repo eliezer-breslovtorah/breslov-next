@@ -28,6 +28,9 @@ test("mobile navigation stays accessible and audio sits above it", async ({
   const navBox = await nav.boundingBox();
   const playerBox = await player.boundingBox();
   expect(playerBox!.y + playerBox!.height).toBeLessThanOrEqual(navBox!.y + 1);
+  await page.screenshot({
+    path: `qa/screenshots/${info.project.name}-bottom-navigation-audio.png`,
+  });
   await nav.getByRole("link", { name: "Browse", exact: true }).click();
   await expect(page).toHaveURL(/\/library$/);
   await expect(

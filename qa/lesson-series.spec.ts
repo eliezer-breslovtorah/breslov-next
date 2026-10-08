@@ -34,7 +34,9 @@ test("lesson series lists chronological siblings and paginates the complete coll
   ).toBeVisible();
   await expect(series.locator(".lesson-series-list li")).toHaveCount(20);
   await expect(
-    series.getByRole("link", { name: `Next lesson →${members[1].title}` }),
+    series
+      .locator(".lesson-series-neighbors")
+      .getByRole("link", { name: /^Next lesson →/ }),
   ).toHaveAttribute("href", `/lessons/${members[1].slug}`);
   await expect(series.locator('[aria-current="page"]')).toContainText(
     first.title,
