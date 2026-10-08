@@ -58,3 +58,5 @@ QA_BASE_URL=http://127.0.0.1:3000 npm run qa
 ```
 
 Browser checks cover desktop, tablet and mobile at 1440, 768, 390 and 320 pixels. The Dockerfile supports a persistent data volume; Docker execution must be verified on the destination server.
+
+New recordings can be imported automatically from original storage with the dedicated [media watcher](docs/MEDIA-WATCHER.md). Run `npm run media:watch` after initializing the app, or install the supplied service. New files default to member-only playback and remain in their original location.

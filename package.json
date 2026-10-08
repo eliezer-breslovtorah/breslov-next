@@ -8,7 +8,9 @@
     "start": "node scripts/serve.mjs",
     "typecheck": "tsc --noEmit",
     "qa": "playwright test",
-    "format": "prettier --write src qa/*.ts *.ts README.md docs/*.md scripts/*.mjs"
+    "format": "prettier --write src qa/*.ts *.ts README.md docs/*.md scripts/*.mjs",
+    "media:watch": "node scripts/media-watch.mjs",
+    "test:media-watch": "node --test qa/media-watch.test.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

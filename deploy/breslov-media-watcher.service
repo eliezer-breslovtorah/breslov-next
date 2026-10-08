@@ -1,0 +1,23 @@
+[Unit]
+Description=Breslov Torah original media library watcher
+After=network.target breslov-next.service
+
+[Service]
+Type=simple
+User=breslov-next
+Group=breslov-next
+WorkingDirectory=/srv/breslov-next
+EnvironmentFile=/etc/breslov-next.env
+ExecStart=/usr/bin/node /srv/breslov-next/scripts/media-watch.mjs
+Restart=on-failure
+RestartSec=10
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/home/newbreslovtorah
+ReadWritePaths=/srv/breslov-data
+
+[Install]
+WantedBy=multi-user.target
