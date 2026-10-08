@@ -9,6 +9,8 @@ import { getLessonMediaAvailability } from "@/lib/media-availability";
 import { LessonPlayback } from "@/components/lesson-playback";
 import { getLessonSeries } from "@/lib/lesson-series";
 import "@/app/lesson-series.css";
+import "@/app/lesson-text.css";
+import { lessonTextParagraphs, lessonTextPreview } from "@/lib/lesson-text";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
@@ -33,6 +35,9 @@ export default async function Page({
   const query = await searchParams;
   const lesson = getLesson(slug);
   if (!lesson) notFound();
+  const about = lessonTextPreview(
+    lessonTextParagraphs(lesson.bodyText || lesson.description),
+  );
   const series = getLessonSeries(
     lesson,
     typeof query.seriesPage === "string" ? query.seriesPage : undefined,
@@ -141,11 +146,25 @@ export default async function Page({
           )}
           <article className="prose">
             <h2>About this lesson</h2>
-            {lesson.bodyText ? (
-              <div className="lesson-body">{lesson.bodyText}</div>
-            ) : (
-              <p>{lesson.description}</p>
-            )}
+            <div className="lesson-description">
+              {about.visible.map((paragraph, index) => (
+                <p key={index} dir="auto">
+                  {paragraph}
+                </p>
+              ))}
+              {about.more.length > 0 && (
+                <details className="lesson-description-more">
+                  <summary>Read more about this lesson</summary>
+                  <div>
+                    {about.more.map((paragraph, index) => (
+                      <p key={index} dir="auto">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </details>
+              )}
+            </div>
           </article>
         </div>
         <aside className="lesson-aside">
