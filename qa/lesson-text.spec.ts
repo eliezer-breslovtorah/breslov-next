@@ -24,6 +24,11 @@ test("lesson notes retain Hebrew and prose while restoring outline paragraphs", 
   const preview = lessonTextPreview(long);
   expect([...preview.visible, ...preview.more]).toEqual(long);
   expect(preview.more.length).toBeGreaterThan(0);
+  const single = "A preserved teaching with Hebrew שָׁלוֹם. ".repeat(80).trim();
+  const split = lessonTextPreview([single]);
+  expect(split.visible.join(" ").length).toBeLessThan(1400);
+  expect([...split.visible, ...split.more].join(" ")).toBe(single);
+  expect(split.more.length).toBeGreaterThan(0);
 });
 
 test("long lesson outlines expand without losing source text", async ({
@@ -47,4 +52,27 @@ test("long lesson outlines expand without losing source text", async ({
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+});
+
+test("long single-paragraph imports also have a readable preview", async ({
+  page,
+}, info) => {
+  await page.goto(
+    "/lessons/breslov-torah-for-women-sara-wurtzel-birkhas-hailanos-blessing-for-fruit-trees-in-blossom",
+  );
+  const notes = page.locator(".lesson-description");
+  expect(
+    (await notes.locator(":scope > p").first().innerText()).length,
+  ).toBeLessThan(1400);
+  await expect(notes.locator("details > div")).toBeHidden();
+  await notes.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(notes.locator("details > div")).toBeVisible();
+  expect(
+    (await notes.locator("details > div").innerText()).length,
+  ).toBeGreaterThan(2000);
+  await notes.scrollIntoViewIfNeeded();
+  await page.screenshot({
+    path: `qa/screenshots/${info.project.name}-lesson-notes.png`,
+  });
 });

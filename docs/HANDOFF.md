@@ -88,3 +88,9 @@ Library filters update immediately, and typed search updates after a short debou
 The fixed mobile menu appears at 800px and below, with Home, Browse, Search, Courses, and My learning. Search focuses the library input. Audio controls sit above the menu, and measured player height reserves space for page content. Safe-area padding handles mobile device edges.
 
 Lesson tags show four unique categories initially, with keyboard-accessible expansion for the remainder. Series navigation uses explicit WordPress series/course memberships rather than topic tags. Each lesson includes previous/next links and a paginated oldest-first list with the current lesson highlighted. Calendar and broad audience/language categories are excluded from series inference. Original media and WordPress remain unchanged.
+
+## Lesson notes, playback, and header search (2026-10-08)
+
+About this lesson now restores readable paragraph boundaries and offers native Read more for long notes, while preserving the teaching text. The player supports 15-second backward/forward skips and 0.75×, 1.0×, 1.25×, 1.5×, and 2.0× speeds. Speed persists through in-app navigation and lesson changes. Native video has the same controls; embedded Vimeo players continue using Vimeo's own controls.
+
+The title-bar search icon opens a keyboard-accessible field. Suggestions come from published lesson tags and filter the library by the selected tag; Enter without a selection searches all lesson text. Escape closes the field and restores focus. The suggestions account for the mobile menu and audio player height.

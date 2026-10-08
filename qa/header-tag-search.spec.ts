@@ -34,8 +34,9 @@ test("header search suggests tags, supports keyboard and fits the viewport", asy
   });
   await input.press("Enter");
   await expect(page).toHaveURL(
-    new RegExp(`/library\\?topic=${encodeURIComponent(tags[0].slug)}`),
+    new RegExp(`/library\\?topic=${encodeURIComponent(tags[0].title)}`),
   );
+  await expect(page.locator("#topic-filter")).toHaveValue(tags[0].title);
   await expect(
     page.getByRole("region", { name: "Library search" }),
   ).toHaveCount(0);
@@ -64,4 +65,50 @@ test("tag autocomplete handles short, Unicode and SQL-looking input safely", asy
     expect(tags.length).toBeLessThanOrEqual(20);
     if (q === "a" || q === "%_") expect(tags).toEqual([]);
   }
+});
+
+test("header suggestions remain above the open audio player", async ({
+  page,
+}, info) => {
+  await page.goto("/");
+  await page.locator(".clip-play").first().click();
+  const player = page.getByRole("region", { name: "Audio player" });
+  await expect(player).toBeVisible();
+  await page
+    .getByRole("button", { name: "Search the library", exact: true })
+    .click();
+  const query = page.getByRole("combobox", { name: "Search lessons and tags" });
+  await query.fill("prayer");
+  await expect(page.getByRole("option").first()).toBeVisible();
+  const panel = await page
+    .getByRole("region", { name: "Library search" })
+    .boundingBox();
+  const audio = await player.boundingBox();
+  expect(panel!.y + panel!.height).toBeLessThanOrEqual(audio!.y);
+  await page.screenshot({
+    path: `qa/screenshots/${info.project.name}-header-search-with-audio.png`,
+  });
+});
+
+test("less common selected tags remain visible in the library filter", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Search the library", exact: true })
+    .click();
+  await page
+    .getByRole("combobox", { name: "Search lessons and tags" })
+    .fill("midnight");
+  await page.getByRole("option").first().click();
+  await expect(page).toHaveURL(/topic=/);
+  const value = new URL(page.url()).searchParams.get("topic");
+  await expect(page.locator("#topic-filter")).toHaveValue(value!);
+  expect(
+    await page
+      .locator("#topic-filter")
+      .evaluate(
+        (select: HTMLSelectElement) => select.selectedOptions[0].textContent,
+      ),
+  ).toBe(value);
 });

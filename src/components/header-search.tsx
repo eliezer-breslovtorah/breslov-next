@@ -74,7 +74,7 @@ export function HeaderSearch() {
     close(true);
     router.push(
       tag
-        ? `/library?topic=${encodeURIComponent(tag.slug)}`
+        ? `/library?topic=${encodeURIComponent(tag.title)}`
         : `/library?q=${encodeURIComponent(query.trim().slice(0, 200))}`,
     );
   };

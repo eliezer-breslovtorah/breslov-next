@@ -49,3 +49,11 @@ Final public HTTPS preview suite: **69 passed, 23 skipped** across 1440px deskto
 ## Original media watcher (2026-10-08)
 
 Ten isolated Node/SQLite tests passed: stable uploads, growing/empty files, restart recovery, edited metadata preservation, supported extensions, rules, exact-path deduplication, concurrent watcher instances, and symlink/root bounds. The dedicated live service baselined 6,392 existing media files and then completed a second scan with zero additions; the existing library remained at 7,243 lessons. Originals and WordPress were not modified. The service is enabled at boot, with original storage explicitly read-only under systemd.
+
+## Lesson notes, playback controls, and header tag search (2026-10-08)
+
+Final public HTTPS verification: **101 passed, 27 skipped** across desktop (1440px), tablet (768px), mobile (390px), and small mobile (320px). Skipped checks require isolated authenticated/write fixtures or a synthetic native video. Four native-video control checks passed separately against an isolated localhost database; enable those checks with `QA_NATIVE_VIDEO_SLUG` pointing to a local fixture. No fixture was added to the public catalog.
+
+Screenshots and browser checks cover cleaned lesson paragraphs, preserved full text behind Read more, long single-paragraph notes, 15-second seek controls, all five playback speeds, header tag autocomplete, keyboard navigation, selected tag labels, and dropdown/player stacking on narrow screens. Less common tags remain visible in the library filter even when absent from its initial facet list. Vimeo continues to use its provider controls.
+
+A fresh source extraction passed npm ci, typecheck, production build, and all ten watcher tests. Application sources match the deployed clean standalone build. The original WordPress homepage returned HTTP 200, and the independently managed media watcher remained active.

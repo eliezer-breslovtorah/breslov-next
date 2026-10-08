@@ -27,6 +27,16 @@ export function lessonTextPreview(paragraphs: string[]) {
   if (paragraphs.join(" ").length <= 1800) {
     return { visible: paragraphs, more: [] as string[] };
   }
+  // A few imports contain one uninterrupted paragraph. Split the preview at
+  // a word boundary, retaining every word in the expanded remainder.
+  if (paragraphs[0]?.length > 1400) {
+    const boundary = paragraphs[0].lastIndexOf(" ", 1100);
+    if (boundary > 0)
+      return {
+        visible: [paragraphs[0].slice(0, boundary)],
+        more: [paragraphs[0].slice(boundary + 1), ...paragraphs.slice(1)],
+      };
+  }
   let end = 1;
   let length = paragraphs[0]?.length || 0;
   while (end < paragraphs.length && length + paragraphs[end].length < 1200) {

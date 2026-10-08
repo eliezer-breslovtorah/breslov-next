@@ -119,3 +119,51 @@ test("audio skips safely, keeps speed on navigation, and fits above mobile tabs"
     player.getByRole("button", { name: "Forward 15 seconds", exact: true }),
   ).toBeDisabled();
 });
+
+test("native video supports safe skips and every requested speed", async ({
+  page,
+  baseURL,
+}) => {
+  test.skip(
+    !process.env.QA_NATIVE_VIDEO_SLUG ||
+      !/^http:\/\/(127\.0\.0\.1|localhost):/.test(baseURL || ""),
+    "Requires isolated native video fixture",
+  );
+  await page.goto(`/lessons/${process.env.QA_NATIVE_VIDEO_SLUG}`);
+  await page.getByRole("button", { name: "Play video", exact: true }).click();
+  const video = page.locator("video");
+  await expect
+    .poll(() =>
+      video.evaluate(
+        (v: HTMLVideoElement) => Number.isFinite(v.duration) && v.duration > 0,
+      ),
+    )
+    .toBe(true);
+  await video.evaluate((v: HTMLVideoElement) => {
+    v.pause();
+    v.currentTime = 1;
+  });
+  const controls = page.locator(".native-video-controls");
+  await controls.getByRole("button", { name: "Back 15 seconds" }).click();
+  expect(await video.evaluate((v: HTMLVideoElement) => v.currentTime)).toBe(0);
+  await controls.getByRole("button", { name: "Forward 15 seconds" }).click();
+  expect(
+    await video.evaluate((v: HTMLVideoElement) =>
+      Math.abs(v.currentTime - Math.min(15, v.duration)),
+    ),
+  ).toBeLessThan(0.5);
+  expect(await video.evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
+  for (const value of ["0.75", "1", "1.25", "1.5", "2"]) {
+    await controls
+      .getByRole("combobox", { name: "Playback speed" })
+      .selectOption(value);
+    await expect
+      .poll(() => video.evaluate((v: HTMLVideoElement) => v.playbackRate))
+      .toBe(Number(value));
+  }
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});

@@ -361,6 +361,9 @@ export function Library({
                 onChange={(event) => change("topic", event.target.value)}
               >
                 <option value="">All topics</option>
+                {draft.topic && !result.facets.topics.includes(draft.topic) && (
+                  <option value={draft.topic}>{draft.topic}</option>
+                )}
                 {result.facets.topics.map((value) => (
                   <option key={value} value={value}>
                     {value}
