@@ -3,6 +3,8 @@
 import {
   createContext,
   useContext,
+  useEffect,
+  type CSSProperties,
   useRef,
   useState,
   type ReactNode,
@@ -46,6 +48,8 @@ export function MediaProvider({
   signedIn?: boolean;
 }) {
   const audio = useRef<HTMLAudioElement>(null);
+  const player = useRef<HTMLElement>(null);
+  const [playerHeight, setPlayerHeight] = useState(0);
   const request = useRef(0);
   const lastSaved = useRef(0);
   const [track, setTrack] = useState<PublicTrack | null>(null);
@@ -54,6 +58,16 @@ export function MediaProvider({
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState("");
+  useEffect(() => {
+    const element = player.current;
+    if (!track || !element) return;
+    const measure = () =>
+      setPlayerHeight(Math.ceil(element.getBoundingClientRect().height));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [track]);
   function persistProgress(force = false) {
     if (
       !signedIn ||
@@ -134,7 +148,16 @@ export function MediaProvider({
         stopVideo: () => setActiveVideo(null),
       }}
     >
-      <div className={track ? "has-audio-player" : undefined}>
+      <div
+        className={track ? "media-layout has-audio-player" : "media-layout"}
+        style={
+          track && playerHeight
+            ? ({
+                "--audio-player-height": `${playerHeight}px`,
+              } as CSSProperties)
+            : undefined
+        }
+      >
         {children}
         <audio
           ref={audio}
@@ -163,7 +186,11 @@ export function MediaProvider({
           }}
         />
         {track && (
-          <section className="sticky-player" aria-label="Audio player">
+          <section
+            ref={player}
+            className="sticky-player"
+            aria-label="Audio player"
+          >
             <div className="sticky-copy">
               <span>Now listening</span>
               <Link href={track.pageUrl}>{track.title}</Link>

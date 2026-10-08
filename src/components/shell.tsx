@@ -2,8 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, ArrowUpRight, Search, Headphones } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Menu,
+  X,
+  ArrowUpRight,
+  Search,
+  Headphones,
+  Home,
+  Library,
+  BookOpen,
+  UserRound,
+} from "lucide-react";
+import "@/app/mobile-navigation.css";
 
 const links = [
   ["Home", "/"],
@@ -13,9 +24,40 @@ const links = [
   ["Dedications", "/dedications"],
   ["Account", "/account"],
 ];
+const mobileLinks = [
+  { label: "Home", href: "/", icon: Home },
+  { label: "Browse", href: "/library", icon: Library },
+  { label: "Search", href: "/library#library-query", icon: Search },
+  { label: "Courses", href: "/courses", icon: BookOpen },
+  { label: "My learning", href: "/account", icon: UserRound },
+];
+function isMobileDestinationActive(
+  pathname: string,
+  href: string,
+  searchActive: boolean,
+) {
+  if (href.includes("#")) return pathname === "/library" && searchActive;
+  if (href === "/library" && pathname === "/library" && searchActive)
+    return false;
+  if (href === "/") return pathname === "/";
+  if (href === "/library" && pathname.startsWith("/lessons/")) return true;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [searchActive, setSearchActive] = useState(false);
+  useEffect(() => {
+    const updateHash = () => {
+      const active = window.location.hash === "#library-query";
+      setSearchActive(active);
+      if (pathname === "/library" && active)
+        document.getElementById("library-query")?.focus();
+    };
+    updateHash();
+    window.addEventListener("hashchange", updateHash);
+    return () => window.removeEventListener("hashchange", updateHash);
+  }, [pathname]);
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -129,6 +171,28 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <a href="#main-content">Back to top ↑</a>
         </div>
       </footer>
+      <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
+        {mobileLinks.map(({ label, href, icon: Icon }) => (
+          <Link
+            key={href}
+            href={href}
+            aria-current={
+              isMobileDestinationActive(pathname, href, searchActive)
+                ? "page"
+                : undefined
+            }
+            onClick={() => {
+              setOpen(false);
+              setSearchActive(href.includes("#"));
+              if (href.includes("#") && pathname === "/library")
+                document.getElementById("library-query")?.focus();
+            }}
+          >
+            <Icon size={21} aria-hidden="true" />
+            <span>{label}</span>
+          </Link>
+        ))}
+      </nav>
     </>
   );
 }
