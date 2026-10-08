@@ -1,0 +1,80 @@
+.lesson-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 18px;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+.lesson-tags-preview,
+.lesson-tags-expanded {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+  max-width: 100%;
+}
+.lesson-tags-preview {
+  display: contents;
+}
+.lesson-tags .lesson-tag-link {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid #e4dfd4;
+  border-radius: 6px;
+  background: #f8f6f1;
+  color: #555043;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+.lesson-tags .lesson-tag-link:hover {
+  background: #eee8dc;
+  border-color: #b7883d;
+}
+.lesson-tags-more {
+  min-width: 0;
+  max-width: 100%;
+}
+.lesson-tags-more summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 5px 8px;
+  cursor: pointer;
+  color: #72521f;
+  font-weight: 600;
+  line-height: 1.4;
+  list-style: none;
+}
+.lesson-tags-more summary::-webkit-details-marker {
+  display: none;
+}
+.lesson-tags-collapse,
+.lesson-tags-more[open] .lesson-tags-expand {
+  display: none;
+}
+.lesson-tags-more[open] .lesson-tags-collapse {
+  display: inline;
+}
+.lesson-tags-more[open] {
+  flex-basis: 100%;
+}
+.lesson-tags-expanded {
+  margin-top: 6px;
+}
+.lesson-tags a:focus-visible,
+.lesson-tags summary:focus-visible {
+  outline: 2px solid #b7883d;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .lesson-tags .lesson-tag-link,
+  .lesson-tags-more summary {
+    min-height: 36px;
+  }
+}

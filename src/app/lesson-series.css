@@ -1,0 +1,118 @@
+.lesson-series {
+  scroll-margin-top: 6rem;
+}
+.lesson-series-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.lesson-series-header h2 {
+  margin: 0.35rem 0;
+  font-size: clamp(1.3rem, 3vw, 1.8rem);
+}
+.lesson-series-header p {
+  margin: 0;
+  color: var(--muted);
+}
+.lesson-series-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lesson-series-list li + li {
+  border-top: 1px solid var(--line);
+}
+.lesson-series-list a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.2rem;
+  text-decoration: none;
+}
+.lesson-series-list a:hover {
+  background: #f7f6f0;
+}
+.lesson-series-list .is-current a {
+  background: #edf3e8;
+  box-shadow: inset 3px 0 #516e44;
+}
+.lesson-series-number {
+  flex: 0 0 2.3rem;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.lesson-series-copy {
+  min-width: 0;
+  flex: 1;
+}
+.lesson-series-copy strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.lesson-series-copy small {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+}
+.lesson-series-current {
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  color: #3c5b30;
+}
+.lesson-series-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.2rem;
+}
+.lesson-series-pagination span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+@media (max-width: 600px) {
+  .lesson-series-header {
+    flex-direction: column;
+  }
+  .lesson-series-list a {
+    gap: 0.6rem;
+    padding: 0.9rem 0.75rem;
+    flex-wrap: wrap;
+  }
+  .lesson-series-number {
+    flex-basis: 1.7rem;
+  }
+  .lesson-series-current {
+    margin-left: 2.3rem;
+  }
+}
+.lesson-series-neighbors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+}
+.lesson-series-neighbors a {
+  flex: 1 1 240px;
+  border: 1px solid var(--line);
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  text-decoration: none;
+  min-width: 0;
+}
+.lesson-series-neighbors small,
+.lesson-series-neighbors strong {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.lesson-series-neighbors small {
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}

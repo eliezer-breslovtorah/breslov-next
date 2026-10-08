@@ -82,3 +82,15 @@ The app now includes the 24 published articles, newsletter archives and subscrip
 Contact, matchmaking, and newsletter requests are private in `/admin/inquiries`. Newsletter subscriptions require staff to add the address to the existing mailing service; no automatic delivery integration is configured. Back up the entire private `APP_DATA_DIR`, including inquiry attachments. Payment forms continue using the existing secure donation service. Nine unresolved historical references point to Contact; the missing original project brochure points to Projects. One archived article has no original body and displays an honest archive notice.
 
 Library filters update immediately, and typed search updates after a short debounce with keyboard-accessible lesson, teacher, and course suggestions.
+
+## Mobile navigation and lesson context (2026-10-08)
+
+The fixed mobile menu appears at 800px and below, with Home, Browse, Search, Courses, and My learning. Search focuses the library input. Audio controls sit above the menu, and measured player height reserves space for page content. Safe-area padding handles mobile device edges.
+
+Lesson tags show four unique categories initially, with keyboard-accessible expansion for the remainder. Series navigation uses explicit WordPress series/course memberships rather than topic tags. Each lesson includes previous/next links and a paginated oldest-first list with the current lesson highlighted. Calendar and broad audience/language categories are excluded from series inference. Original media and WordPress remain unchanged.
+
+## Lesson notes, playback, and header search (2026-10-08)
+
+About this lesson now restores readable paragraph boundaries and offers native Read more for long notes, while preserving the teaching text. The player supports 15-second backward/forward skips and 0.75×, 1.0×, 1.25×, 1.5×, and 2.0× speeds. Speed persists through in-app navigation and lesson changes. Native video has the same controls; embedded Vimeo players continue using Vimeo's own controls.
+
+The title-bar search icon opens a keyboard-accessible field. Suggestions come from published lesson tags and filter the library by the selected tag; Enter without a selection searches all lesson text. Escape closes the field and restores focus. The suggestions account for the mobile menu and audio player height.

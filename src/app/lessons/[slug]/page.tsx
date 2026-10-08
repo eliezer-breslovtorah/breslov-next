@@ -2,10 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLesson, getLessons, getMedia } from "@/lib/catalog";
 import { getCurrentUser, canAccessMembers } from "@/lib/auth";
+import { LessonTags } from "@/components/lesson-tags";
 import { LessonCard } from "@/components/lesson-card";
 import { BookmarkButton } from "@/components/account-forms";
 import { getLessonMediaAvailability } from "@/lib/media-availability";
 import { LessonPlayback } from "@/components/lesson-playback";
+import { getLessonSeries } from "@/lib/lesson-series";
+import "@/app/lesson-series.css";
+import "@/app/lesson-text.css";
+import { lessonTextParagraphs, lessonTextPreview } from "@/lib/lesson-text";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
@@ -21,12 +26,24 @@ export async function generateMetadata({
 }
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ seriesPage?: string | string[] }>;
 }) {
   const { slug } = await params;
+  const query = await searchParams;
   const lesson = getLesson(slug);
   if (!lesson) notFound();
+  const about = lessonTextPreview(
+    lessonTextParagraphs(lesson.bodyText || lesson.description),
+  );
+  const series = getLessonSeries(
+    lesson,
+    typeof query.seriesPage === "string" ? query.seriesPage : undefined,
+  );
+  const seriesHref = (page: number) =>
+    `/lessons/${encodeURIComponent(lesson.slug)}?seriesPage=${page}#lesson-series`;
   const user = await getCurrentUser();
   const media = lesson.id ? getMedia(lesson.id) : undefined;
   const effectiveAccess = lesson.access || media?.access || "legacy";
@@ -76,18 +93,7 @@ export default async function Page({
               </time>
             )}
           </div>
-          <div className="lesson-category-list">
-            {(lesson.categories || [])
-              .filter((t) => t.taxonomy !== "authors")
-              .map((t) => (
-                <Link
-                  key={`${t.taxonomy}-${t.id}`}
-                  href={`/library?category=${encodeURIComponent(t.slug)}`}
-                >
-                  {t.title}
-                </Link>
-              ))}
-          </div>
+          <LessonTags categories={lesson.categories} />
           {lesson.dedication && (
             <aside className="lesson-dedication">
               <h2>Dedication</h2>
@@ -140,11 +146,25 @@ export default async function Page({
           )}
           <article className="prose">
             <h2>About this lesson</h2>
-            {lesson.bodyText ? (
-              <div className="lesson-body">{lesson.bodyText}</div>
-            ) : (
-              <p>{lesson.description}</p>
-            )}
+            <div className="lesson-description">
+              {about.visible.map((paragraph, index) => (
+                <p key={index} dir="auto">
+                  {paragraph}
+                </p>
+              ))}
+              {about.more.length > 0 && (
+                <details className="lesson-description-more">
+                  <summary>Read more about this lesson</summary>
+                  <div>
+                    {about.more.map((paragraph, index) => (
+                      <p key={index} dir="auto">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                </details>
+              )}
+            </div>
           </article>
         </div>
         <aside className="lesson-aside">
@@ -168,6 +188,106 @@ export default async function Page({
           </div>
         </aside>
       </section>
+      {series && (
+        <section
+          className="section lesson-series"
+          id="lesson-series"
+          aria-labelledby="lesson-series-title"
+        >
+          <div className="lesson-series-header">
+            <div>
+              <p className="eyebrow">More from this series</p>
+              <h2 id="lesson-series-title">{series.collection.title}</h2>
+              <p>{series.total} lessons · Oldest first</p>
+            </div>
+            <Link
+              href={`/courses/${encodeURIComponent(series.collection.slug)}`}
+            >
+              Browse this series →
+            </Link>
+          </div>
+          {(series.previous || series.next) && (
+            <nav
+              className="lesson-series-neighbors"
+              aria-label="Continue this series"
+            >
+              {series.previous && (
+                <Link
+                  href={`/lessons/${encodeURIComponent(series.previous.slug)}`}
+                >
+                  <small>← Previous lesson</small>
+                  <strong>{series.previous.title}</strong>
+                </Link>
+              )}
+              {series.next && (
+                <Link href={`/lessons/${encodeURIComponent(series.next.slug)}`}>
+                  <small>Next lesson →</small>
+                  <strong>{series.next.title}</strong>
+                </Link>
+              )}
+            </nav>
+          )}
+          <ol
+            className="lesson-series-list"
+            start={(series.page - 1) * series.pageSize + 1}
+          >
+            {series.items.map((item, index) => (
+              <li
+                key={item.slug}
+                className={item.slug === lesson.slug ? "is-current" : undefined}
+              >
+                <Link
+                  href={
+                    item.slug === lesson.slug
+                      ? "#lesson-series"
+                      : `/lessons/${encodeURIComponent(item.slug)}`
+                  }
+                  aria-current={item.slug === lesson.slug ? "page" : undefined}
+                >
+                  <span className="lesson-series-number" aria-hidden="true">
+                    {(series.page - 1) * series.pageSize + index + 1}
+                  </span>
+                  <span className="lesson-series-copy">
+                    <strong>{item.title}</strong>
+                    <small>
+                      {item.speaker} · {item.format}
+                      {item.duration ? ` · ${item.duration}` : ""}
+                    </small>
+                  </span>
+                  {item.slug === lesson.slug && (
+                    <span className="lesson-series-current">
+                      Current lesson
+                    </span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ol>
+          {series.pages > 1 && (
+            <nav
+              className="lesson-series-pagination"
+              aria-label="Series lesson pages"
+            >
+              {series.page > 1 && (
+                <Link href={seriesHref(series.page - 1)}>
+                  ← Previous lessons
+                </Link>
+              )}
+              <span>
+                Page {series.page} of {series.pages}
+              </span>
+              {series.page < series.pages && (
+                <Link href={seriesHref(series.page + 1)}>Next lessons →</Link>
+              )}
+              {series.page !== series.currentPage && (
+                <Link href={seriesHref(series.currentPage)}>
+                  Back to current lesson
+                </Link>
+              )}
+            </nav>
+          )}
+        </section>
+      )}
       <section className="section">
         <div className="section-heading">
           <h2>Continue exploring</h2>

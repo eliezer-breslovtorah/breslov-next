@@ -3,12 +3,24 @@
 import {
   createContext,
   useContext,
+  useEffect,
+  type CSSProperties,
   useRef,
   useState,
   type ReactNode,
 } from "react";
 import Link from "next/link";
-import { Pause, Play, X, ExternalLink } from "lucide-react";
+import {
+  Pause,
+  Play,
+  X,
+  ExternalLink,
+  RotateCcw,
+  RotateCw,
+} from "lucide-react";
+import "../app/playback-controls.css";
+
+export const PLAYBACK_SPEEDS = [0.75, 1, 1.25, 1.5, 2] as const;
 
 export type PublicTrack = {
   id: string;
@@ -23,6 +35,8 @@ type MediaContextValue = {
   track: PublicTrack | null;
   playing: boolean;
   activeVideo: string | null;
+  playbackRate: number;
+  setPlaybackRate: (rate: number) => void;
   playAudio: (track: PublicTrack) => void;
   startVideo: (id: string) => void;
   pauseAudio: () => void;
@@ -46,6 +60,8 @@ export function MediaProvider({
   signedIn?: boolean;
 }) {
   const audio = useRef<HTMLAudioElement>(null);
+  const player = useRef<HTMLElement>(null);
+  const [playerHeight, setPlayerHeight] = useState(0);
   const request = useRef(0);
   const lastSaved = useRef(0);
   const [track, setTrack] = useState<PublicTrack | null>(null);
@@ -54,6 +70,35 @@ export function MediaProvider({
   const [position, setPosition] = useState(0);
   const [duration, setDuration] = useState(0);
   const [error, setError] = useState("");
+  const [playbackRate, updatePlaybackRate] = useState(1);
+  function setPlaybackRate(rate: number) {
+    if (!PLAYBACK_SPEEDS.some((speed) => speed === rate)) return;
+    updatePlaybackRate(rate);
+    if (audio.current) audio.current.playbackRate = rate;
+  }
+  function seekTo(value: number) {
+    const element = audio.current;
+    if (
+      !element ||
+      !Number.isFinite(element.duration) ||
+      element.duration <= 0 ||
+      !Number.isFinite(value)
+    )
+      return;
+    const next = Math.min(element.duration, Math.max(0, value));
+    element.currentTime = next;
+    setPosition(next);
+  }
+  useEffect(() => {
+    const element = player.current;
+    if (!track || !element) return;
+    const measure = () =>
+      setPlayerHeight(Math.ceil(element.getBoundingClientRect().height));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [track]);
   function persistProgress(force = false) {
     if (
       !signedIn ||
@@ -78,6 +123,7 @@ export function MediaProvider({
     if (!element) return;
     const current = ++request.current;
     setError("");
+    element.playbackRate = playbackRate;
     element.play().catch(() => {
       if (request.current === current) {
         setPlaying(false);
@@ -128,17 +174,31 @@ export function MediaProvider({
         track,
         playing,
         activeVideo,
+        playbackRate,
+        setPlaybackRate,
         playAudio,
         startVideo,
         pauseAudio,
         stopVideo: () => setActiveVideo(null),
       }}
     >
-      <div className={track ? "has-audio-player" : undefined}>
+      <div
+        className={track ? "media-layout has-audio-player" : "media-layout"}
+        style={
+          track && playerHeight
+            ? ({
+                "--audio-player-height": `${playerHeight}px`,
+              } as CSSProperties)
+            : undefined
+        }
+      >
         {children}
         <audio
           ref={audio}
           preload="none"
+          onLoadedMetadata={() => {
+            if (audio.current) audio.current.playbackRate = playbackRate;
+          }}
           onPlay={() => setPlaying(true)}
           onPause={() => {
             setPlaying(false);
@@ -163,13 +223,26 @@ export function MediaProvider({
           }}
         />
         {track && (
-          <section className="sticky-player" aria-label="Audio player">
+          <section
+            ref={player}
+            className="sticky-player"
+            aria-label="Audio player"
+          >
             <div className="sticky-copy">
               <span>Now listening</span>
               <Link href={track.pageUrl}>{track.title}</Link>
               <small>{track.speaker}</small>
             </div>
             <div className="player-controls">
+              <button
+                type="button"
+                aria-label="Back 15 seconds"
+                disabled={!duration}
+                onClick={() => seekTo((audio.current?.currentTime ?? 0) - 15)}
+              >
+                <RotateCcw size={20} />
+                <span className="skip-seconds">15</span>
+              </button>
               <button
                 type="button"
                 onClick={() => {
@@ -186,7 +259,35 @@ export function MediaProvider({
               >
                 {playing ? <Pause size={20} /> : <Play size={20} />}
               </button>
+              <button
+                type="button"
+                aria-label="Forward 15 seconds"
+                disabled={!duration}
+                onClick={() => seekTo((audio.current?.currentTime ?? 0) + 15)}
+              >
+                <RotateCw size={20} />
+                <span className="skip-seconds">15</span>
+              </button>
             </div>
+            <label className="playback-speed">
+              <span className="sr-only">Playback speed</span>
+              <select
+                aria-label="Playback speed"
+                value={playbackRate}
+                onChange={(event) =>
+                  setPlaybackRate(Number(event.target.value))
+                }
+              >
+                {PLAYBACK_SPEEDS.map((speed) => (
+                  <option key={speed} value={speed}>
+                    {speed === 1
+                      ? "1.0"
+                      : speed.toFixed(speed === 2 ? 1 : speed === 1.5 ? 1 : 2)}
+                    ×
+                  </option>
+                ))}
+              </select>
+            </label>
             <div className="player-seek">
               <span>{timeLabel(position)}</span>
               <input
@@ -199,8 +300,7 @@ export function MediaProvider({
                 disabled={!duration}
                 onChange={(event) => {
                   const value = Number(event.target.value);
-                  if (audio.current) audio.current.currentTime = value;
-                  setPosition(value);
+                  seekTo(value);
                 }}
               />
               <span>{duration ? timeLabel(duration) : track.duration}</span>

@@ -14,3 +14,7 @@ Verification: trusted TLS and hostname validation passed; HTTPS homepage/library
 Public homepage audio: `/audio/` bypasses the Next.js proxy. Four exact AliasMatch mappings read original recordings from `/home/newbreslovtorah/public_html/media`. The portable template is `deploy/public-audio-apache.conf`; the aliases belong only to the preview virtual hosts. WordPress .htaccess files and originals remain unchanged.
 
 On 2026-10-07 the preview was updated with native legacy pages and live library search using a clean handoff-source build. The previous preview build is preserved at `.tools/preview-build-before-native-pages` for rollback. Only the Next.js preview process was restarted; no WordPress or Apache configuration was changed for this update.
+
+On 2026-10-08 the preview was updated with compact lesson tags, five-tab mobile navigation, and series continuation lists. The previous build is preserved at `.tools/preview-build-before-mobile-navigation`. The deployed standalone build came from a fresh handoff-source extraction. Only the Next.js preview process was restarted.
+
+On 2026-10-08 the preview was updated with cleaner lesson notes, 15-second playback controls and five speeds, and header tag autocomplete. The deployed build was verified from a clean source extraction. The previous build is preserved at `.tools/preview-build-before-playback-controls`. Only the Next.js preview process was restarted; the separate `breslov-media-watcher.service` remains enabled and active. No WordPress or Apache configuration was changed for this update.
