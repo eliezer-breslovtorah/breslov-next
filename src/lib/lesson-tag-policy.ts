@@ -15,6 +15,9 @@ export const excludedTagSlugs: readonly string[] = [
   "eza-rudy",
   "seidner",
   "dedication-hill",
+  "dedication-carlebach",
+  "dedication-dorfman",
+  "dedication-chusid",
   "william",
   "markiewitz",
   "rubin",
@@ -41,8 +44,15 @@ export const excludedTagSlugs: readonly string[] = [
 ];
 
 const excluded = new Set(excludedTagSlugs);
-export function isPublicLessonTag(tag: { slug: string; taxonomy: string }) {
+export function isPublicLessonTag(
+  tag: { slug: string; taxonomy: string },
+  dedication = "",
+) {
   return (
-    tag.taxonomy !== "post_tag" || !excluded.has(tag.slug.trim().toLowerCase())
+    tag.taxonomy !== "post_tag" ||
+    (!excluded.has(tag.slug.trim().toLowerCase()) &&
+      !(
+        tag.slug.trim().toLowerCase() === "hill" && /\bHill\b/i.test(dedication)
+      ))
   );
 }

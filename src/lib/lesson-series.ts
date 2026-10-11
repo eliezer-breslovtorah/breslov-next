@@ -1,6 +1,8 @@
 import "server-only";
 import { getCollections, getDb } from "./store";
 import type { Lesson } from "./content";
+import { publicLessonSql } from "./lesson-visibility";
+import { getLessonPass, lessonPassLabel } from "./lesson-pass";
 
 // Use explicit course/series membership, never topic tags or the speaker name.
 // Calendar, audience and language groupings are browsing categories, not sequences.
@@ -36,9 +38,14 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
       a.slug.localeCompare(b.slug),
   );
   const db = getDb();
+  const pass = getLessonPass(lesson);
   for (const collection of specific) {
-    const from = `FROM lessons l WHERE l.status='publish' AND EXISTS(SELECT 1 FROM lesson_terms t WHERE t.lesson_id=l.id AND t.term_id=? AND t.taxonomy=?)`;
-    const values = [collection.sourceId!, collection.taxonomy!] as const;
+    const from = `FROM lessons l WHERE ${publicLessonSql()} AND EXISTS(SELECT 1 FROM lesson_terms t WHERE t.lesson_id=l.id AND t.term_id=? AND t.taxonomy=?) ${pass ? "AND lesson_pass(l.payload)=?" : ""}`;
+    const values: (string | number)[] = [
+      collection.sourceId!,
+      collection.taxonomy!,
+    ];
+    if (pass) values.push(pass);
     const total = Number(
       (db.prepare(`SELECT COUNT(*) n ${from}`).get(...values) as { n: number })
         .n,
@@ -93,7 +100,12 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
         ) as { slug: string; title: string } | undefined;
     };
     return {
-      collection,
+      collection: pass
+        ? {
+            ...collection,
+            title: `${collection.title} · ${lessonPassLabel(pass)}`,
+          }
+        : collection,
       total,
       page,
       pages,

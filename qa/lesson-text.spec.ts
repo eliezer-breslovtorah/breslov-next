@@ -57,9 +57,7 @@ test("long lesson outlines expand without losing source text", async ({
 test("long single-paragraph imports also have a readable preview", async ({
   page,
 }, info) => {
-  await page.goto(
-    "/lessons/breslov-torah-for-women-sara-wurtzel-birkhas-hailanos-blessing-for-fruit-trees-in-blossom",
-  );
+  await page.goto("/lessons/12th-of-kislev-yahrzeit-of-the-bas-ayin-zal");
   const notes = page.locator(".lesson-description");
   expect(
     (await notes.locator(":scope > p").first().innerText()).length,
@@ -70,7 +68,7 @@ test("long single-paragraph imports also have a readable preview", async ({
   await expect(notes.locator("details > div")).toBeVisible();
   expect(
     (await notes.locator("details > div").innerText()).length,
-  ).toBeGreaterThan(2000);
+  ).toBeGreaterThan(900);
   await notes.scrollIntoViewIfNeeded();
   await page.screenshot({
     path: `qa/screenshots/${info.project.name}-lesson-notes.png`,

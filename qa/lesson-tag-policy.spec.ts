@@ -13,6 +13,15 @@ test("dedication names are excluded only from topics", () => {
   expect(
     isPublicLessonTag({ slug: " Jeanette-Adams ", taxonomy: "post_tag" }),
   ).toBe(false);
+  expect(
+    isPublicLessonTag(
+      { slug: "hill", taxonomy: "post_tag" },
+      "Dedicated by William Hill",
+    ),
+  ).toBe(false);
+  expect(isPublicLessonTag({ slug: "hill", taxonomy: "post_tag" }, "")).toBe(
+    true,
+  );
   for (const slug of [
     "rachel",
     "yaakov",

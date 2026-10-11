@@ -4,6 +4,9 @@ import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import type { Lesson, Collection, Teacher } from "./content";
+import { isHiddenTeacher, publicLessonSql } from "./lesson-visibility";
+import { getLessonPass, LESSON_PASS_COLLECTIONS } from "./lesson-pass";
+import { isPublicLessonTag } from "./lesson-tag-policy";
 import {
   lessons as fallbackLessons,
   collections as fallbackCollections,
@@ -47,6 +50,22 @@ export function getDb(): DatabaseSync {
     CREATE VIRTUAL TABLE IF NOT EXISTS lesson_search USING fts5(lesson_id UNINDEXED,title,speaker,category,body,tokenize='unicode61 remove_diacritics 2');
     CREATE TABLE IF NOT EXISTS audit_log(id INTEGER PRIMARY KEY AUTOINCREMENT,at TEXT NOT NULL,actor TEXT NOT NULL,action TEXT NOT NULL,subject TEXT NOT NULL);
   `);
+  db.function(
+    "lesson_pass",
+    { deterministic: true },
+    (payload) => getLessonPass(JSON.parse(String(payload))) || "",
+  );
+  db.function(
+    "public_tag",
+    { deterministic: true },
+    (slug, taxonomy, dedication) =>
+      Number(
+        isPublicLessonTag(
+          { slug: String(slug), taxonomy: String(taxonomy) },
+          String(dedication || ""),
+        ),
+      ),
+  );
   connection = db;
   if (
     !(db.prepare("SELECT COUNT(*) AS n FROM lessons").get() as { n: number }).n
@@ -189,6 +208,14 @@ export function saveLesson(input: Lesson, media?: MediaRecord): Lesson {
     throw e;
   }
 }
+function publicLesson(lesson: Lesson): Lesson {
+  return {
+    ...lesson,
+    categories: lesson.categories?.filter((tag) =>
+      isPublicLessonTag(tag, lesson.dedication),
+    ),
+  };
+}
 function hydrateLesson(payload: string): Lesson {
   const lesson = JSON.parse(payload) as Lesson & { embedUrl?: string };
   if (lesson.access === "public" && !lesson.videoEmbedUrl && lesson.embedUrl) {
@@ -203,10 +230,14 @@ export function getLesson(
 ): Lesson | undefined {
   const row = getDb()
     .prepare(
-      `SELECT payload FROM lessons WHERE slug=? ${options.includeDrafts ? "" : "AND status='publish'"}`,
+      `SELECT payload FROM lessons WHERE slug=? ${options.includeDrafts ? "" : `AND ${publicLessonSql("lessons")}`}`,
     )
     .get(slug) as { payload: string } | undefined;
-  return row ? hydrateLesson(row.payload) : undefined;
+  return row
+    ? options.includeDrafts
+      ? hydrateLesson(row.payload)
+      : publicLesson(hydrateLesson(row.payload))
+    : undefined;
 }
 /** Resolve a legacy URL by its original post type, not a possibly collided new slug. */
 export function getLegacyLesson(
@@ -221,10 +252,10 @@ export function getLegacyLesson(
   ];
   const row = getDb()
     .prepare(
-      "SELECT payload FROM lessons WHERE status='publish' AND format=? AND json_extract(payload,'$.legacyUrl') IN (?,?) LIMIT 1",
+      `SELECT payload FROM lessons WHERE ${publicLessonSql("lessons")} AND format=? AND json_extract(payload,'$.legacyUrl') IN (?,?) LIMIT 1`,
     )
     .get(format, ...urls) as { payload: string } | undefined;
-  if (row) return hydrateLesson(row.payload);
+  if (row) return publicLesson(hydrateLesson(row.payload));
   const native = getLesson(slug);
   return native?.format === format ? native : undefined;
 }
@@ -234,10 +265,14 @@ export function getLessonById(
 ): Lesson | undefined {
   const row = getDb()
     .prepare(
-      `SELECT payload FROM lessons WHERE id=? ${includeDrafts ? "" : "AND status='publish'"}`,
+      `SELECT payload FROM lessons WHERE id=? ${includeDrafts ? "" : `AND ${publicLessonSql("lessons")}`}`,
     )
     .get(id) as { payload: string } | undefined;
-  return row ? hydrateLesson(row.payload) : undefined;
+  return row
+    ? includeDrafts
+      ? hydrateLesson(row.payload)
+      : publicLesson(hydrateLesson(row.payload))
+    : undefined;
 }
 export function getMedia(id: string): MediaRecord | undefined {
   const row = getDb()
@@ -250,22 +285,43 @@ export function getCollections(): Collection[] {
     getDb().prepare("SELECT payload FROM collections ORDER BY slug").all() as {
       payload: string;
     }[]
-  ).map((r) => {
-    const c = JSON.parse(r.payload) as Collection & {
-      hebrewTranslation?: string;
-    };
-    return { ...c, hebrewTitle: c.hebrewTitle || c.hebrewTranslation };
-  });
+  )
+    .map((r) => {
+      const c = JSON.parse(r.payload) as Collection & {
+        hebrewTranslation?: string;
+      };
+      return { ...c, hebrewTitle: c.hebrewTitle || c.hebrewTranslation };
+    })
+    .concat(
+      LESSON_PASS_COLLECTIONS.map((group) => ({
+        slug: group.slug,
+        title: group.title,
+        description: group.description,
+        taxonomy: "series",
+        image: "/images/rabbi-nasan-maimon.jpg",
+        legacyUrl: "",
+        hebrewTitle: undefined,
+      })),
+    )
+    .sort(
+      (a, b) =>
+        Number(LESSON_PASS_COLLECTIONS.some((group) => group.slug === b.slug)) -
+          Number(
+            LESSON_PASS_COLLECTIONS.some((group) => group.slug === a.slug),
+          ) || a.slug.localeCompare(b.slug),
+    );
 }
 export function getCollection(slug: string): Collection | undefined {
   return getCollections().find((c) => c.slug === slug);
 }
-export function getTeachers(): Teacher[] {
+export function getTeachers(includeHidden = false): Teacher[] {
   return (
     getDb().prepare("SELECT payload FROM teachers").all() as {
       payload: string;
     }[]
-  ).map((r) => JSON.parse(r.payload));
+  )
+    .map((r) => JSON.parse(r.payload) as Teacher)
+    .filter((t) => includeHidden || !isHiddenTeacher(t.name));
 }
 export function getPublicPages(): PublicPage[] {
   return (
@@ -298,7 +354,7 @@ export function getLessons(query: SearchQuery = {}) {
   const params: (string | number)[] = [];
   const where: string[] = [];
   let search = false;
-  if (!query.includeDrafts) where.push("l.status='publish'");
+  if (!query.includeDrafts) where.push(publicLessonSql());
   const words =
     (query.q || "")
       .slice(0, 200)
@@ -324,7 +380,13 @@ export function getLessons(query: SearchQuery = {}) {
     params.push(query.format);
   }
   const category = query.category || query.collection;
-  if (category) {
+  const passGroup = LESSON_PASS_COLLECTIONS.find(
+    (group) => group.slug === category,
+  );
+  if (passGroup) {
+    where.push("lesson_pass(l.payload)=?");
+    params.push(passGroup.pass);
+  } else if (category) {
     const collection = getCollection(category);
     const cs = getCollections();
     const ids = new Set<number>();
@@ -394,20 +456,23 @@ export function getLessons(query: SearchQuery = {}) {
     (() => {
       const l = hydrateLesson(r.payload);
       if (!query.includeDrafts && l.access !== "public") delete l.videoEmbedUrl;
-      return l;
+      return query.includeDrafts ? l : publicLesson(l);
     })(),
   );
   const teachers = (
     db
       .prepare(
-        "SELECT DISTINCT speaker FROM lessons WHERE status='publish' ORDER BY speaker",
+        `SELECT DISTINCT speaker FROM lessons WHERE ${publicLessonSql("lessons")} ORDER BY speaker`,
       )
       .all() as { speaker: string }[]
   ).map((r) => r.speaker);
   const topics = (
     db
       .prepare(
-        "SELECT title,COUNT(*) n FROM lesson_terms WHERE taxonomy IN ('parshios','parshas','post_tag') GROUP BY title ORDER BY n DESC LIMIT 80",
+        `SELECT t.title,COUNT(*) n FROM lesson_terms t JOIN lessons l ON l.id=t.lesson_id
+         WHERE ${publicLessonSql()} AND t.taxonomy IN ('parshios','parshas','post_tag')
+         AND public_tag(t.slug,t.taxonomy,json_extract(l.payload,'$.dedication'))=1
+         GROUP BY t.title ORDER BY n DESC LIMIT 80`,
       )
       .all() as { title: string }[]
   ).map((r) => r.title);
@@ -425,7 +490,9 @@ export function catalogStats() {
     lessons: Number(
       (
         db
-          .prepare("SELECT COUNT(*) n FROM lessons WHERE status='publish'")
+          .prepare(
+            `SELECT COUNT(*) n FROM lessons WHERE ${publicLessonSql("lessons")}`,
+          )
           .get() as { n: number }
       ).n,
     ),

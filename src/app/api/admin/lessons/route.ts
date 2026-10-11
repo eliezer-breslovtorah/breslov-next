@@ -85,7 +85,7 @@ export async function POST(request: Request) {
       image:
         old?.speaker === value("speaker")
           ? old.image
-          : getTeachers().find((t) => t.name === value("speaker"))?.image ||
+          : getTeachers(true).find((t) => t.name === value("speaker"))?.image ||
             "/images/logo.png",
       legacyUrl: old?.legacyUrl || "",
       videoEmbedUrl: value("videoEmbedUrl"),

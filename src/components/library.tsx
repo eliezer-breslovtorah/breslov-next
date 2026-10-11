@@ -13,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { Lesson, Collection } from "@/lib/content";
+import { getLessonPass, lessonPassLabel } from "@/lib/lesson-pass";
 export type BrowseQuery = {
   q?: string;
   teacher?: string;
@@ -428,7 +429,11 @@ export function Library({
             >
               <img src={lesson.image} alt="" loading="lazy" />
               <div>
-                <span className="eyebrow">{lesson.collection}</span>
+                <span className="eyebrow">
+                  {lesson.collection}
+                  {getLessonPass(lesson) &&
+                    ` · ${lessonPassLabel(getLessonPass(lesson)!)}`}
+                </span>
                 <h2>{lesson.title}</h2>
                 <p>{lesson.speaker}</p>
                 <div className="meta">
