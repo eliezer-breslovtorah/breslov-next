@@ -97,7 +97,7 @@ The title-bar search icon opens a keyboard-accessible field. Suggestions come fr
 
 ## Public library curation and teacher biographies
 
-`src/lib/lesson-visibility.ts` controls public visibility. Sara Wurtzel’s lessons, including shared-author records, are hidden from public browsing, search, direct lesson/media requests, series, and teacher directories. The imported records and original files are retained; authorized staff can still edit the lessons. This policy does not modify WordPress.
+`src/lib/lesson-visibility.ts` controls public visibility. Sara Wurtzel’s 10 sole-author lessons are hidden from public browsing, search, direct lesson/media requests, series, and teacher directories. The imported records and original files are retained; authorized staff can still edit the lessons. The 257 shared-author lessons have been restored with Sara removed from their author fields and author taxonomy; remaining teachers and all other lesson content are preserved. The idempotent `scripts/correct-sara-shared-authors.py` updates an existing database and the seed (dry run by default; `--apply` backs up the database first). This policy does not modify WordPress.
 
 `src/lib/lesson-tag-policy.ts` lists reviewed dedication-name tag exclusions. Public payloads, tag links, topic facets, and tag autocomplete apply this policy while retaining the dedication itself. Ambiguous biblical names remain topics; Hill is hidden only when the lesson’s dedication identifies the Hill family, preserving the genuine hill-topic usage. Original staff metadata remains editable.
 

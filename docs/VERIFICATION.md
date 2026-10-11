@@ -67,3 +67,9 @@ Checks cover sole-author and three shared-author Sara Wurtzel cases, direct less
 The source catalog has 267 Sara-associated lessons retained for staff access; no records or media were deleted. The public pass classifier identifies 3,001 first-pass and 906 second-pass lessons in the source catalog after these visibility exclusions. Ambiguous special classes remain unclassified. The reviewed dedication policy removes 56 tag occurrences across 36 source lessons, retaining all dedication text. These are source-catalog counts; the live watcher can add newer recordings.
 
 After deployment, all **24 targeted HTTPS preview checks passed** across the four viewport sizes. The original WordPress homepage returned HTTP 200 and `breslov-media-watcher.service` remained active. Application sources matched the clean deployed build.
+
+## Shared-author attribution correction (2026-10-11)
+
+At the owner’s request, 257 shared-author records were restored publicly by removing Sara Wurtzel from their speaker fields and author taxonomy. All other authors, lesson content, publication/access settings, and media records were preserved. Her ten sole-author lessons remain hidden. The correction updates the live database, FTS index, taxonomy rows, and portable catalog seed, with a private database backup and audit entries. The historical CSV export remains unchanged for reference.
+
+Verification checked every one of the 257 exported IDs against the database, seed, taxonomy, and search index. The seed diff changes exactly those 257 lessons and only their speaker/categories fields. A repeated dry run reported zero remaining corrections. All eight targeted HTTPS tests passed across desktop, tablet, mobile, and small mobile, checking three remaining-author combinations and sole-author exclusions. No app rebuild or restart was needed because these pages query the database dynamically. WordPress and original recordings were untouched.

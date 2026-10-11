@@ -37,13 +37,13 @@ test("Sara lessons and teacher are unavailable publicly, including direct media 
   const hidden = catalog.lessons.filter((lesson: { speaker: string }) =>
     lesson.speaker.toLowerCase().includes("sara wurtzel"),
   );
-  // Check sole-author and each co-author combination, not just the directory listing.
+  // Shared-author attribution was corrected; only sole-author lessons stay hidden.
   const samples = [
     ...new Map(
       hidden.map((lesson: { speaker: string }) => [lesson.speaker, lesson]),
     ).values(),
   ] as { slug: string; id: string; legacyUrl: string }[];
-  expect(samples.length).toBeGreaterThanOrEqual(4);
+  expect(samples.length).toBe(1);
   for (const lesson of samples) {
     expect((await request.get("/lessons/" + lesson.slug)).status()).toBe(404);
     expect((await request.get("/api/media/" + lesson.id)).status()).toBe(404);
@@ -190,5 +190,55 @@ test("series continuation stays within the current Halakhos pass", async ({
         pass,
       );
     await fits(page);
+  }
+});
+
+test("shared-author corrections restore lessons with the remaining teachers", async ({
+  request,
+}) => {
+  const fixtures = [
+    {
+      id: "wp-shiurim-42970",
+      slug: "ein-yaakov-lesson-012a-clip-1-judging-others-favorably-rabbi-levi-yitzchak-of-berdichev",
+      speaker: "Rabbi Zvi Aryeh Rosenfeld z”l",
+      title:
+        "Ein Yaakov - Lesson 012a - Clip 1 - Judging Others Favorably - Rabbi Levi Yitzchak of Berdichev",
+    },
+    {
+      id: "wp-shiurim-42571",
+      slug: "2020-05-06-lh3-oc3-rosh-hashanah-1-para-1-2-sounds-of-the-shofar-honesty-in-prayer",
+      speaker: "Rabbi Nasan Maimon",
+      title:
+        "2020-05-06 - LH3 - OC3 - Rosh Hashanah 1 - Para. 1-2 - Sounds of the Shofar; Honesty in Prayer",
+    },
+    {
+      id: "wp-shiurim-43412",
+      slug: "2020-11-24-lh2-oc2-devarim-hanohagim-baseudah-4-para-6b-names-of-hashem-shemos-hatzaddikim-mentioning-the-name-of-a-tzaddik-includes-all-his-merits-yom-hazikaron-righteous-women",
+      speaker: 'Rabbi Michel Dorfman z"l',
+      title:
+        "2020-11-24 - LH2 - OC2 - Devarim HaNohagim BaSeudah 4 - Para. 6b - Names of Hashem; Shemos HaTzaddikim; Mentioning the Name of a Tzaddik Includes All His Merits; Yom HaZikaron; Righteous Women",
+    },
+  ];
+  for (const fixture of fixtures) {
+    expect((await request.get("/lessons/" + fixture.slug)).status()).toBe(200);
+    const result = await (
+      await request.get(
+        "/api/search?teacher=" +
+          encodeURIComponent(fixture.speaker) +
+          "&q=" +
+          encodeURIComponent(fixture.title),
+      )
+    ).json();
+    const lesson = result.items.find(
+      (item: { id: string }) => item.id === fixture.id,
+    );
+    expect(lesson).toBeTruthy();
+    expect(lesson.speaker).toBe(fixture.speaker);
+    expect(
+      lesson.categories.some(
+        (tag: { taxonomy: string; slug: string }) =>
+          tag.taxonomy === "authors" && tag.slug === "sara-wurtzel",
+      ),
+    ).toBe(false);
   }
 });
