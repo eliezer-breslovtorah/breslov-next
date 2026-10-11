@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTeachers, getLessons } from "@/lib/catalog";
 import { Library, type BrowseQuery } from "@/components/library";
+import { teacherBiographyParagraphs } from "@/lib/teacher-biographies";
+import "./teacher-biography.css";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
@@ -12,7 +14,12 @@ export async function generateMetadata({
   const item = getTeachers().find((item) => item.slug === slug);
   return {
     title: item?.name || "Teaching collection",
-    description: item?.description.slice(0, 160),
+    description: item
+      ? teacherBiographyParagraphs(item.slug, item.description)[0]?.slice(
+          0,
+          160,
+        )
+      : undefined,
   };
 }
 
@@ -34,6 +41,10 @@ export default async function Page({
     ]),
   );
   const result = getLessons({ ...query, teacher: teacher.name });
+  const biography = teacherBiographyParagraphs(
+    teacher.slug,
+    teacher.description,
+  );
   return (
     <div className="page-wrap">
       <nav className="breadcrumb" aria-label="Breadcrumb">
@@ -46,7 +57,13 @@ export default async function Page({
         <div>
           <p className="eyebrow">OUR TEACHERS</p>
           <h1>{teacher.name}</h1>
-          <p>{teacher.description}</p>
+          <div className="teacher-biography">
+            {biography.map((paragraph, index) => (
+              <p key={index} dir="auto">
+                {paragraph}
+              </p>
+            ))}
+          </div>
           <p>{result.total.toLocaleString()} teachings in the library</p>
         </div>
       </header>

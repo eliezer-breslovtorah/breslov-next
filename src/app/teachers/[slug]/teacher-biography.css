@@ -1,0 +1,23 @@
+.teacher-profile > div {
+  min-width: 0;
+}
+
+.teacher-biography {
+  max-width: 65ch;
+  overflow-wrap: anywhere;
+}
+
+.teacher-biography p {
+  line-height: 1.75;
+  margin-block: 0 1rem;
+}
+
+@media (min-width: 521px) {
+  .teacher-profile:has(.teacher-biography) {
+    align-items: flex-start;
+  }
+
+  .teacher-profile > img {
+    flex-shrink: 0;
+  }
+}
