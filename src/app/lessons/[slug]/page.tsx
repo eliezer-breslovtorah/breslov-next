@@ -11,6 +11,7 @@ import { getLessonSeries } from "@/lib/lesson-series";
 import "@/app/lesson-series.css";
 import "@/app/lesson-text.css";
 import { lessonTextParagraphs, lessonTextPreview } from "@/lib/lesson-text";
+import { getLessonPass, lessonPassLabel } from "@/lib/lesson-pass";
 export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
@@ -35,6 +36,7 @@ export default async function Page({
   const query = await searchParams;
   const lesson = getLesson(slug);
   if (!lesson) notFound();
+  const pass = getLessonPass(lesson);
   const about = lessonTextPreview(
     lessonTextParagraphs(lesson.bodyText || lesson.description),
   );
@@ -77,7 +79,10 @@ export default async function Page({
       </nav>
       <section className="detail-grid">
         <div>
-          <p className="eyebrow">{lesson.collection}</p>
+          <p className="eyebrow">
+            {lesson.collection}
+            {pass ? ` · ${lessonPassLabel(pass)}` : ""}
+          </p>
           <h1>{lesson.title}</h1>
           <p className="detail-teacher">{lesson.speaker}</p>
           <div className="meta">

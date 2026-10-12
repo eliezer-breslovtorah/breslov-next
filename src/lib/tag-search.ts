@@ -1,5 +1,6 @@
 import "server-only";
 import { getDb } from "./store";
+import { publicLessonSql } from "./lesson-visibility";
 const registered = new WeakSet<object>();
 const normalize = (value: string) =>
   value.normalize("NFKD").replace(/\p{M}/gu, "").toLowerCase();
@@ -23,8 +24,12 @@ export function autocompleteTags(query: string) {
     .prepare(
       `SELECT t.slug, MIN(t.title) AS title, COUNT(DISTINCT t.lesson_id) AS count
     FROM lesson_terms t JOIN lessons l ON l.id=t.lesson_id
-    WHERE t.taxonomy='post_tag' AND l.status='publish' AND ${where}
+    WHERE t.taxonomy='post_tag' AND ${publicLessonSql("l")} AND public_tag(t.slug,t.taxonomy,json_extract(l.payload,'$.dedication'))=1 AND ${where}
     GROUP BY t.slug ORDER BY count DESC, title COLLATE NOCASE LIMIT 20`,
     )
-    .all(...words) as { slug: string; title: string; count: number }[];
+    .all(...words) as {
+    slug: string;
+    title: string;
+    count: number;
+  }[];
 }

@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs";
+import { isHiddenTeacher } from "../src/lib/lesson-visibility";
 const catalog = JSON.parse(fs.readFileSync("content/catalog.json", "utf8"));
 const collection = catalog.collections.find(
   (c: { slug: string }) => c.slug === "series-r-rosenfeld-likutey-moharan-1",
@@ -10,6 +11,7 @@ const members = catalog.lessons
       (t) => t.id === collection.sourceId && t.taxonomy === "series",
     ),
   )
+  .filter((l: { speaker: string }) => !isHiddenTeacher(l.speaker))
   .sort(
     (
       a: { publishedAt: string; id: string },
@@ -79,7 +81,11 @@ test("calendar tags alone do not fabricate a lesson series", async ({
   page,
 }) => {
   const calendar = catalog.lessons.find(
-    (l: { categories?: { taxonomy: string; parentId: number }[] }) =>
+    (l: {
+      speaker: string;
+      categories?: { taxonomy: string; parentId: number }[];
+    }) =>
+      !isHiddenTeacher(l.speaker) &&
       l.categories?.some(
         (t) => t.taxonomy === "courses" && t.parentId === 352,
       ) &&

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { getCollections, getTeachers } from "@/lib/store";
+import { LESSON_PASS_COLLECTIONS } from "@/lib/lesson-pass";
 import { TaxonomyEditor } from "@/components/taxonomy-editor";
 export const dynamic = "force-dynamic";
 export default async function Taxonomy() {
@@ -12,7 +13,13 @@ export default async function Taxonomy() {
         Create and edit courses, category descriptions, hierarchy, and teacher
         profiles.
       </p>
-      <TaxonomyEditor collections={getCollections()} teachers={getTeachers()} />
+      <TaxonomyEditor
+        collections={getCollections().filter(
+          (c) =>
+            !LESSON_PASS_COLLECTIONS.some((group) => group.slug === c.slug),
+        )}
+        teachers={getTeachers(true)}
+      />
     </div>
   );
 }

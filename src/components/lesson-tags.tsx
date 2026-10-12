@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isPublicLessonTag } from "@/lib/lesson-tag-policy";
 import type { TermRef } from "@/lib/content";
 import "@/app/lesson-tags.css";
 
@@ -14,6 +15,7 @@ export function LessonTags({ categories = [] }: { categories?: TermRef[] }) {
       const title = tag.title.trim().normalize("NFKC").toLowerCase();
       if (
         tag.taxonomy === "authors" ||
+        !isPublicLessonTag(tag) ||
         !slug ||
         !title ||
         seenSlugs.has(slug) ||

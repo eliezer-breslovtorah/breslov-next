@@ -41,7 +41,9 @@ export default async function Page({
   query.sort = query.sort || "oldest";
   const result = getLessons({ ...query, category: slug });
   const all = getCollections();
-  const parent = all.find((item) => item.sourceId === collection.parentId);
+  const parent = collection.parentId
+    ? all.find((item) => item.sourceId === collection.parentId)
+    : undefined;
   const children = all.filter(
     (item) => collection.sourceId && item.parentId === collection.sourceId,
   );
