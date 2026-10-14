@@ -1,8 +1,13 @@
 import "server-only";
 import { getCollections, getDb } from "./store";
-import type { Lesson } from "./content";
+import type { Collection, Lesson } from "./content";
 import { publicLessonSql } from "./lesson-visibility";
-import { getLessonPass, lessonPassLabel } from "./lesson-pass";
+import { lessonSequenceKey } from "./lesson-order";
+import {
+  getLessonPass,
+  lessonPassLabel,
+  LESSON_PASS_COLLECTIONS,
+} from "./lesson-pass";
 
 // Use explicit course/series membership, never topic tags or the speaker name.
 // Calendar, audience and language groupings are browsing categories, not sequences.
@@ -12,7 +17,12 @@ const browsingCourses = new Set([
   "courses-hebrew-and-yiddish",
   "courses-music",
 ]);
-export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
+export function getLessonSeries(
+  lesson: Lesson,
+  requestedPage?: string,
+  order: "sequence" | "oldest" = "oldest",
+  requestedCollectionSlug?: string,
+) {
   const collections = getCollections();
   const memberships = new Set(
     (lesson.categories || [])
@@ -39,6 +49,75 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
   );
   const db = getDb();
   const pass = getLessonPass(lesson);
+  const sortKey =
+    order === "sequence" ? "lesson_sequence(l.title)" : "l.published_at";
+  const currentKey =
+    order === "sequence" ? lessonSequenceKey(lesson) : lesson.publishedAt || "";
+  type Scope = {
+    collection: Collection;
+    from: string;
+    values: (string | number)[];
+    virtualPass: boolean;
+    contextSlug?: string;
+  };
+  const scopes: Scope[] = [];
+  const requested = collections.find(
+    (collection) =>
+      collection.slug === requestedCollectionSlug &&
+      (collection.taxonomy === "series" || collection.taxonomy === "courses"),
+  );
+  if (requested) {
+    const group = LESSON_PASS_COLLECTIONS.find(
+      (item) => item.slug === requested.slug,
+    );
+    let condition = "";
+    const values: (string | number)[] = [];
+    if (group) {
+      // Virtual pass collections cover every matching chapter, not one imported term.
+      condition = "lesson_pass(l.payload)=?";
+      values.push(group.pass);
+    } else if (requested.sourceId) {
+      const ids = new Set([requested.sourceId]);
+      let changed = true;
+      while (changed) {
+        changed = false;
+        for (const collection of collections) {
+          if (
+            collection.sourceId &&
+            collection.parentId &&
+            ids.has(collection.parentId) &&
+            !ids.has(collection.sourceId)
+          ) {
+            ids.add(collection.sourceId);
+            changed = true;
+          }
+        }
+      }
+      condition = `EXISTS(SELECT 1 FROM lesson_terms t WHERE t.lesson_id=l.id AND t.term_id IN (${[...ids].map(() => "?").join(",")}))`;
+      values.push(...ids);
+      if (pass) {
+        condition += " AND lesson_pass(l.payload)=?";
+        values.push(pass);
+      }
+    } else {
+      condition =
+        "(l.collection=? OR EXISTS(SELECT 1 FROM lesson_terms t WHERE t.lesson_id=l.id AND t.slug=?))";
+      values.push(requested.title, requested.slug);
+    }
+    const from = `FROM lessons l WHERE ${publicLessonSql()} AND ${condition}`;
+    // The URL is navigation context, never permission to link unrelated lessons.
+    const containsCurrent = db
+      .prepare(`SELECT 1 ${from} AND l.id=? LIMIT 1`)
+      .get(...values, lesson.id || "");
+    if (containsCurrent)
+      scopes.push({
+        collection: requested,
+        from,
+        values,
+        virtualPass: Boolean(group),
+        contextSlug: requested.slug,
+      });
+  }
   for (const collection of specific) {
     const from = `FROM lessons l WHERE ${publicLessonSql()} AND EXISTS(SELECT 1 FROM lesson_terms t WHERE t.lesson_id=l.id AND t.term_id=? AND t.taxonomy=?) ${pass ? "AND lesson_pass(l.payload)=?" : ""}`;
     const values: (string | number)[] = [
@@ -46,6 +125,9 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
       collection.taxonomy!,
     ];
     if (pass) values.push(pass);
+    scopes.push({ collection, from, values, virtualPass: false });
+  }
+  for (const { collection, from, values, virtualPass, contextSlug } of scopes) {
     const total = Number(
       (db.prepare(`SELECT COUNT(*) n ${from}`).get(...values) as { n: number })
         .n,
@@ -55,14 +137,11 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
       (
         db
           .prepare(
-            `SELECT COUNT(*) n ${from} AND (l.published_at < ? OR (l.published_at=? AND l.id<=?))`,
+            `SELECT COUNT(*) n ${from} AND (${sortKey} < ? OR (${sortKey}=? AND l.id<=?))`,
           )
-          .get(
-            ...values,
-            lesson.publishedAt || "",
-            lesson.publishedAt || "",
-            lesson.id || "",
-          ) as { n: number }
+          .get(...values, currentKey, currentKey, lesson.id || "") as {
+          n: number;
+        }
       ).n,
     );
     const pageSize = 20;
@@ -76,7 +155,7 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
     // Select only display metadata: protected playback URLs never enter this list.
     const items = db
       .prepare(
-        `SELECT l.slug,l.title,l.speaker,l.format,json_extract(l.payload,'$.duration') duration ${from} ORDER BY l.published_at ASC,l.id ASC LIMIT ? OFFSET ?`,
+        `SELECT l.slug,l.title,l.speaker,l.format,json_extract(l.payload,'$.duration') duration ${from} ORDER BY ${sortKey} ASC,l.id ASC LIMIT ? OFFSET ?`,
       )
       .all(...values, pageSize, (page - 1) * pageSize) as {
       slug: string;
@@ -90,22 +169,21 @@ export function getLessonSeries(lesson: Lesson, requestedPage?: string) {
       const order = direction === "previous" ? "DESC" : "ASC";
       return db
         .prepare(
-          `SELECT l.slug,l.title ${from} AND (l.published_at ${operator} ? OR (l.published_at=? AND l.id ${operator} ?)) ORDER BY l.published_at ${order},l.id ${order} LIMIT 1`,
+          `SELECT l.slug,l.title ${from} AND (${sortKey} ${operator} ? OR (${sortKey}=? AND l.id ${operator} ?)) ORDER BY ${sortKey} ${order},l.id ${order} LIMIT 1`,
         )
-        .get(
-          ...values,
-          lesson.publishedAt || "",
-          lesson.publishedAt || "",
-          lesson.id || "",
-        ) as { slug: string; title: string } | undefined;
+        .get(...values, currentKey, currentKey, lesson.id || "") as
+        { slug: string; title: string } | undefined;
     };
     return {
-      collection: pass
-        ? {
-            ...collection,
-            title: `${collection.title} · ${lessonPassLabel(pass)}`,
-          }
-        : collection,
+      collection:
+        pass && !virtualPass
+          ? {
+              ...collection,
+              title: `${collection.title} · ${lessonPassLabel(pass)}`,
+            }
+          : collection,
+      order,
+      contextSlug,
       total,
       page,
       pages,
