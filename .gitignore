@@ -17,3 +17,5 @@ error_log
 __pycache__/
 
 .ui-build/
+
+.bandwidth-build/
