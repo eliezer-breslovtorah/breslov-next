@@ -64,7 +64,13 @@ export function ContactForm({
       </label>
       <label>
         Message
-        <textarea name="message" maxLength={10000} rows={7} />
+        <textarea
+          name="message"
+          maxLength={10000}
+          rows={7}
+          required
+          placeholder="What would you like to ask Rav Nasan?"
+        />
       </label>
       <div
         aria-hidden="true"
@@ -77,7 +83,7 @@ export function ContactForm({
       </div>
       {message && <p role="alert">{message}</p>}
       <button className="button primary" disabled={busy}>
-        {busy ? "Sending…" : "Send message"}
+        {busy ? "Sending…" : "Send question or message"}
       </button>
     </form>
   );

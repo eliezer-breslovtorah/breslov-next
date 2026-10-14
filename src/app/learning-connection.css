@@ -1,0 +1,50 @@
+.learning-connection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+  margin: 48px 0 24px;
+  padding: 32px;
+  border: 1px solid var(--line, #ddd);
+  border-radius: 16px;
+  background: #f4f1e9;
+  overflow-wrap: anywhere;
+}
+.learning-connection > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+.learning-connection h2 {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+.learning-connection p {
+  line-height: 1.7;
+}
+.learning-connection-actions {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.learning-connection-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.learning-connection .button {
+  white-space: normal;
+  min-height: 44px;
+}
+@media (max-width: 700px) {
+  .learning-connection {
+    grid-template-columns: 1fr;
+    padding: 22px;
+    gap: 28px;
+    margin-top: 32px;
+  }
+}
