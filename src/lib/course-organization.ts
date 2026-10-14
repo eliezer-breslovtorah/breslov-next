@@ -64,7 +64,6 @@ const definitions: Record<CourseGroupId, FamilyDefinition[]> = {
       "Explore Rebbe Nachman’s stories and their deeper meaning.",
       [
         "series-sipurey-maasios",
-        "courses-sipurey-masiyos-13-stories",
         "series-r-rosenfeld-sipurey-maasios",
         "types-sipurei-masiyos-stories",
       ],
@@ -91,7 +90,7 @@ const definitions: Record<CourseGroupId, FamilyDefinition[]> = {
       "tehillim",
       "Tehillim",
       "Study the Psalms and their place in Jewish life.",
-      ["courses-sefer-tehillim", "courses-tehillim"],
+      ["courses-tehillim"],
     ],
     [
       "ein-yaakov",
@@ -125,23 +124,32 @@ const definitions: Record<CourseGroupId, FamilyDefinition[]> = {
       return [
         `month-${number}`,
         name,
-        `Teachings for ${name} and its holidays.`,
+        [
+          "Pesach",
+          "Lag BaOmer",
+          "Shavuos",
+          "The Three Weeks",
+          "Tisha B’Av",
+          "Preparing for Rosh Hashanah",
+          "Rosh Hashanah, Yom Kippur & Sukkos",
+          "Bringing the holidays into daily life",
+          "Chanukah",
+          "Asarah B’Teves",
+          "Tu B’Shevat",
+          "Purim",
+        ][index] + ` · Teachings for ${name}.`,
         [
           index === 0
             ? "courses-nissan"
-            : `courses-${number}-${name.toLowerCase()}`,
+            : index === 5
+              ? "courses-06-elul"
+              : `courses-${number}-${name.toLowerCase()}`,
           `types-chodesh-${number}-${name.toLowerCase()}`,
           ...(index === 7 ? ["types-chodesh-8-cheshvan"] : []),
           ...(index === 5 ? ["types-elul-rosh-hashanah"] : []),
         ],
       ];
     }),
-    [
-      "shabbos",
-      "Shabbos",
-      "Prepare for and deepen the experience of Shabbos.",
-      ["courses-shabbos"],
-    ],
     [
       "holidays",
       "Jewish holidays",
@@ -248,7 +256,6 @@ const definitions: Record<CourseGroupId, FamilyDefinition[]> = {
       "Meet the people and events that shaped Breslov.",
       [
         "series-breslov-history-biography",
-        "courses-c-11-biographies",
         "types-history",
         "types-history-2",
         "types-biography-yahrzeit",
@@ -289,13 +296,7 @@ const definitions: Record<CourseGroupId, FamilyDefinition[]> = {
       "music",
       "Music & nigunim",
       "Breslov melodies, holy song, and soundscapes.",
-      [
-        "courses-breslov-nigunim-melodies",
-        "series-zemiros",
-        "courses-music",
-        "series-music",
-        "types-music",
-      ],
+      ["courses-breslov-nigunim-melodies", "series-music", "types-music"],
     ],
     [
       "archive",
@@ -337,10 +338,7 @@ const groupDetails: Record<CourseGroupId, [string, string]> = {
     "Breslov texts & Torah study",
     "Choose a sefer and follow a sustained course of learning.",
   ],
-  calendar: [
-    "The Jewish year",
-    "Find teachings for the months, holidays, and Shabbos.",
-  ],
+  calendar: ["The Jewish year", "Find teachings for the months and holidays."],
   topics: [
     "Topics for daily life",
     "Explore joy, prayer, faith, family, and other areas of personal growth.",
@@ -419,7 +417,10 @@ export function courseGroups(collections: Collection[]): CourseGroup[] {
 }
 
 export function courseCollectionLabel(collection: Collection): string {
-  return collection.title
+  if (collection.slug === "series-likuteyhalakhos")
+    return "Likutey Halakhos · Introduction";
+  const label = collection.title
     .replace(/^Chodesh\s+\d{1,2}\s*-\s*/i, "")
     .replace(/^\d{2}-/, "");
+  return collection.taxonomy === "types" ? `${label} · Video` : label;
 }
