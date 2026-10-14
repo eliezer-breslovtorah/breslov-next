@@ -110,3 +110,15 @@ Teacher biographies and their editorial source links are in `src/lib/teacher-bio
 The course overview groups learning into Breslov texts and Torah study, the Jewish year, and topics for daily life. Related recordings are presented as book/subject families rather than hundreds of disconnected chapters and audio/video categories. Calendar months follow the Jewish year from Nissan through Adar, with recognizable holiday names. Secondary groups cover weekly Torah portions, history and biographies, listening formats, audiences, and languages.
 
 Edit the curated families and descriptions in `src/lib/course-organization.ts`. Their links reuse existing collection slugs and preserve the original hierarchy, lesson membership, and guided browsing pages. Six currently empty collections are omitted from featured paths. All original collections—including empty or unfeatured ones—remain available through All collections and search. Legacy `type` filters and pagination remain supported. The page uses server-rendered links and native search; no additional service or database migration is required.
+
+## Learning journeys (2026-10-14)
+
+The homepage retains immediate listening and the featured video, and adds six routes into learning: beginner steps (`/start`), a short introduction (`/meet-rav-nasan`), criteria-based browsing (`/library`), systematic texts (`/study`), life subjects, and timely teachings (`/calendar`). All recordings use the existing original-media routes.
+
+Edit the curated selections in `src/lib/learning-paths.ts`. Beginner steps and text starts reference existing catalog lessons and collections. Library filters apply immediately and support tag autocomplete, teacher, category, format, access, duration, publication dates, and dedication presence. Invalid filter values are ignored. Text order uses the title conventions in `src/lib/lesson-order.ts`; numbered lessons precede dated extras, and titles without reliable numbering follow them. Selected course context is preserved across continuation links and order changes.
+
+`src/lib/timely-teachings.ts` selects the current and next Hebrew months in the Asia/Jerusalem time zone. These are monthly learning suggestions, not an exact holiday schedule; visitors should confirm live class times.
+
+The shared question and giving panels use the existing contact inbox and donation pages. Questions prefill the relevant lesson or course in the subject and reach the team for Rav Nasan; this change adds no automatic email delivery. Projects describe the existing Torah, community, family, and holiday activities and link to their existing donation forms. No payment integration or new charge was introduced.
+
+Run `npm run test:learning` for 16 focused catalog, ordering, date, filter, and Hebrew-month checks. `qa/learning-journeys.spec.ts` exercises these journeys at 1440, 768, 390, and 320 pixels.

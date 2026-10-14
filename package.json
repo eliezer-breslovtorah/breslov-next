@@ -11,7 +11,8 @@
     "format": "prettier --write src qa/*.ts *.ts README.md docs/*.md scripts/*.mjs",
     "media:watch": "node scripts/media-watch.mjs",
     "test:media-watch": "node --test qa/media-watch.test.mjs",
-    "test:catalog": "node --experimental-strip-types --test qa/lesson-pass.test.mjs qa/lesson-visibility.test.mjs"
+    "test:catalog": "node --experimental-strip-types --test qa/lesson-pass.test.mjs qa/lesson-visibility.test.mjs",
+    "test:learning": "node --experimental-strip-types --test qa/learning-paths.test.mjs qa/lesson-order.test.mjs qa/timely-teachings.test.mjs qa/lesson-filter-values.test.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

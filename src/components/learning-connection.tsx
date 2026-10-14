@@ -29,7 +29,7 @@ export function LearningConnection({ subject }: { subject?: string }) {
         <h2>Connect through giving</h2>
         <p>
           Rav Nasan supports a wide variety of Breslov organizations and
-          activities. Giving tzedakah is a meaningful way to connect: help
+          activities. Giving tzedakah is one of the best ways to connect: help
           sustain Torah learning and support families and community life.
         </p>
         <div className="learning-connection-actions">

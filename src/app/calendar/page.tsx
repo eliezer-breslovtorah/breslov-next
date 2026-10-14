@@ -1,3 +1,4 @@
+import { LearningConnection } from "@/components/learning-connection";
 import Link from "next/link";
 import { publicPageLinks } from "@/lib/page-navigation";
 import { getCollections } from "@/lib/catalog";
@@ -18,9 +19,7 @@ export default function Page() {
       </header>
       <section className="section" aria-labelledby="timely-teachings-heading">
         <h2 id="timely-teachings-heading">Teachings for this season</h2>
-        <p>
-          Month recommendations for {timely.dateLabel}, using Jerusalem time.
-        </p>
+        <p>Suggested learning for {timely.dateLabel}.</p>
         <div className="support-grid">
           <Link className="support-card" href={timely.currentMonth.href}>
             <p className="eyebrow">THIS MONTH</p>
@@ -35,10 +34,6 @@ export default function Page() {
             <span>Prepare for the coming month →</span>
           </Link>
         </div>
-        <p>
-          These are monthly learning suggestions. Check a local Jewish calendar
-          for exact holiday dates and sunset times.
-        </p>
       </section>
       <section className="section" aria-labelledby="all-months-heading">
         <h2 id="all-months-heading">Explore the whole year</h2>
@@ -74,10 +69,7 @@ export default function Page() {
               </a>
             </p>
           ))}
-        <p>
-          The linked schedule was imported from our previous website. Please
-          confirm current class times before joining.
-        </p>
+        <p>Please confirm current class times with the team before joining.</p>
         <p>
           <Link
             className="button"
@@ -92,6 +84,7 @@ export default function Page() {
           </Link>
         </p>
       </section>
+      <LearningConnection subject="Choosing a Breslov learning path" />
     </div>
   );
 }

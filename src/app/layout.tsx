@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./learning-journeys.css";
 import "./support.css";
 import "./library.css";
 import "./admin.css";

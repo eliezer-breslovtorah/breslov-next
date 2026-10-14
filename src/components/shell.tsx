@@ -21,8 +21,8 @@ const links = [
   ["Home", "/"],
   ["Library", "/library"],
   ["Courses", "/courses"],
-  ["Teachers", "/teachers"],
-  ["Dedications", "/dedications"],
+  ["Start here", "/start"],
+  ["Ask Rav Nasan", "/contact"],
   ["Account", "/account"],
 ];
 const mobileLinks = [
@@ -131,10 +131,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </div>
           <div>
             <h3>Explore</h3>
+            <Link href="/start">New to Breslov? Start here</Link>
+            <Link href="/meet-rav-nasan">Meet Rav Nasan</Link>
+            <Link href="/study">Study a text in order</Link>
             <Link href="/library">Shiurim library</Link>
             <Link href="/courses">Learning courses</Link>
             <Link href="/teachers">Our teachers</Link>
-            <Link href="/calendar">Class schedule</Link>
+            <Link href="/calendar">Timely teachings &amp; live classes</Link>
             <Link href="/community">Community &amp; prayer</Link>
             <Link href="/blog">Articles &amp; updates</Link>
             <Link href="/newsletter">Breslov Bridge newsletter</Link>
@@ -144,9 +147,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Link href="/about">About Breslov Torah</Link>
             <Link href="/dedications">Dedicate a teaching</Link>
             <Link href="/account">My learning</Link>
-            <a href="/contact" target="_blank" rel="noreferrer">
-              Contact us <ArrowUpRight size={13} />
-            </a>
+            <Link href="/contact?subject=Question%20for%20Rav%20Nasan">
+              Ask Rav Nasan
+            </Link>
+            <Link href="/projects">Breslov projects &amp; giving</Link>
             <a href="/donate" target="_blank" rel="noreferrer">
               Support the learning <ArrowUpRight size={13} />
             </a>

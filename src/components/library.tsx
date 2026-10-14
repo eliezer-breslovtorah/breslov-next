@@ -14,16 +14,9 @@ import {
 } from "lucide-react";
 import type { Lesson, Collection } from "@/lib/content";
 import { getLessonPass, lessonPassLabel } from "@/lib/lesson-pass";
-export type BrowseQuery = {
-  q?: string;
-  teacher?: string;
-  category?: string;
-  collection?: string;
-  topic?: string;
-  format?: string;
-  sort?: string;
-  page?: string | number;
-};
+import { BROWSE_QUERY_KEYS, type BrowseQuery } from "@/lib/browse-query";
+export type { BrowseQuery } from "@/lib/browse-query";
+import { TopicFinder } from "./topic-finder";
 export type BrowseResult = {
   items: Lesson[];
   total: number;
@@ -60,16 +53,7 @@ export function Library({
   const text = draft.q || "";
   function paramsFor(value: BrowseQuery) {
     const params = new URLSearchParams();
-    for (const key of [
-      "q",
-      "teacher",
-      "category",
-      "collection",
-      "topic",
-      "format",
-      "sort",
-      "page",
-    ] as const)
+    for (const key of BROWSE_QUERY_KEYS)
       if (value[key]) params.set(key, String(value[key]));
     return params;
   }
@@ -372,6 +356,10 @@ export function Library({
                 ))}
               </select>
             </label>
+            <TopicFinder
+              selected={draft.topic || ""}
+              onSelect={(value) => change("topic", value)}
+            />
             <label htmlFor="format-filter">
               Format
               <select
@@ -395,10 +383,81 @@ export function Library({
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
+                <option value="sequence">Text / lesson order</option>
                 <option value="title">Title A–Z</option>
                 <option value="relevance">Search relevance</option>
               </select>
             </label>
+            <details
+              className="library-more-filters"
+              open={
+                Boolean(
+                  draft.duration ||
+                  draft.access ||
+                  draft.publishedFrom ||
+                  draft.publishedTo ||
+                  draft.dedication,
+                ) || undefined
+              }
+            >
+              <summary>More filters</summary>
+              <label htmlFor="duration-filter">
+                Length
+                <select
+                  id="duration-filter"
+                  value={draft.duration || ""}
+                  onChange={(e) => change("duration", e.target.value)}
+                >
+                  <option value="">Any length</option>
+                  <option value="short">Under 10 minutes</option>
+                  <option value="medium">10–30 minutes</option>
+                  <option value="long">30–60 minutes</option>
+                  <option value="extended">60 minutes or more</option>
+                </select>
+              </label>
+              <label htmlFor="access-filter">
+                Access
+                <select
+                  id="access-filter"
+                  value={draft.access || ""}
+                  onChange={(e) => change("access", e.target.value)}
+                >
+                  <option value="">All lessons</option>
+                  <option value="public">Public recordings</option>
+                  <option value="members">Member recordings</option>
+                </select>
+              </label>
+              <label htmlFor="published-from-filter">
+                Published from
+                <input
+                  type="date"
+                  id="published-from-filter"
+                  value={draft.publishedFrom || ""}
+                  onChange={(e) => change("publishedFrom", e.target.value)}
+                />
+              </label>
+              <label htmlFor="published-to-filter">
+                Published through
+                <input
+                  type="date"
+                  id="published-to-filter"
+                  value={draft.publishedTo || ""}
+                  onChange={(e) => change("publishedTo", e.target.value)}
+                />
+              </label>
+              <label htmlFor="dedication-filter">
+                Dedication
+                <select
+                  id="dedication-filter"
+                  value={draft.dedication || ""}
+                  onChange={(e) => change("dedication", e.target.value)}
+                >
+                  <option value="">Any lesson</option>
+                  <option value="yes">With a dedication</option>
+                  <option value="no">Without a dedication</option>
+                </select>
+              </label>
+            </details>
           </aside>
         </div>
       </form>
@@ -424,7 +483,7 @@ export function Library({
           result.items.map((lesson) => (
             <Link
               className="lesson-row"
-              href={`/lessons/${encodeURIComponent(lesson.slug)}`}
+              href={`/lessons/${encodeURIComponent(lesson.slug)}${draft.sort === "sequence" ? `?seriesOrder=sequence${fixedCategory ? "&seriesCourse=" + encodeURIComponent(fixedCategory) : ""}` : ""}`}
               key={lesson.id || lesson.slug}
             >
               <img src={lesson.image} alt="" loading="lazy" />

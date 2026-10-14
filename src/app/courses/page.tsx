@@ -1,3 +1,4 @@
+import { LearningConnection } from "@/components/learning-connection";
 import Link from "next/link";
 import {
   BookOpen,
@@ -322,6 +323,7 @@ export default async function Page({
           </Link>
         </div>
       </section>
+      <LearningConnection subject="Choosing a Breslov learning path" />
     </div>
   );
 }

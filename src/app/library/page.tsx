@@ -1,3 +1,5 @@
+import { LearningConnection } from "@/components/learning-connection";
+import { readBrowseQuery } from "@/lib/browse-query";
 import { Library, type BrowseQuery } from "@/components/library";
 import { getLessons } from "@/lib/catalog";
 export const dynamic = "force-dynamic";
@@ -8,18 +10,7 @@ export default async function Page({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const raw = await searchParams;
-  const query: BrowseQuery = Object.fromEntries(
-    [
-      "q",
-      "teacher",
-      "category",
-      "collection",
-      "topic",
-      "format",
-      "sort",
-      "page",
-    ].map((key) => [key, typeof raw[key] === "string" ? raw[key] : undefined]),
-  );
+  const query: BrowseQuery = readBrowseQuery(raw, []);
   const result = getLessons(query);
   return (
     <div className="page-wrap">
@@ -29,6 +20,7 @@ export default async function Page({
         <p>Find your next moment of inspiration in the teachings of Breslov.</p>
       </header>
       <Library result={result} query={query} />
+      <LearningConnection subject={"Finding a lesson"} />
     </div>
   );
 }

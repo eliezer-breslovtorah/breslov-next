@@ -1,3 +1,5 @@
+import { LearningConnection } from "@/components/learning-connection";
+import { readBrowseQuery } from "@/lib/browse-query";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTeachers, getLessons } from "@/lib/catalog";
@@ -34,12 +36,7 @@ export default async function Page({
   const teacher = getTeachers().find((item) => item.slug === slug);
   if (!teacher) notFound();
   const raw = await searchParams;
-  const query: BrowseQuery = Object.fromEntries(
-    ["q", "category", "topic", "format", "sort", "page"].map((key) => [
-      key,
-      typeof raw[key] === "string" ? raw[key] : undefined,
-    ]),
-  );
+  const query: BrowseQuery = readBrowseQuery(raw, ["teacher"]);
   const result = getLessons({ ...query, teacher: teacher.name });
   const biography = teacherBiographyParagraphs(
     teacher.slug,
@@ -78,6 +75,7 @@ export default async function Page({
           fixedTeacher={teacher.name}
         />
       </section>
+      <LearningConnection subject={teacher.name} />
     </div>
   );
 }

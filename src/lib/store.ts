@@ -6,6 +6,9 @@ import { randomUUID } from "node:crypto";
 import type { Lesson, Collection, Teacher } from "./content";
 import { isHiddenTeacher, publicLessonSql } from "./lesson-visibility";
 import { getLessonPass, LESSON_PASS_COLLECTIONS } from "./lesson-pass";
+import type { BrowseQuery } from "./browse-query";
+import { durationSeconds, validPublicationDate } from "./lesson-filter-values";
+import { lessonSequenceKey } from "./lesson-order";
 import { isPublicLessonTag } from "./lesson-tag-policy";
 import {
   lessons as fallbackLessons,
@@ -65,6 +68,12 @@ export function getDb(): DatabaseSync {
           String(dedication || ""),
         ),
       ),
+  );
+  db.function("lesson_duration", { deterministic: true }, (value) =>
+    durationSeconds(value),
+  );
+  db.function("lesson_sequence", { deterministic: true }, (value) =>
+    lessonSequenceKey({ title: String(value || "") }),
   );
   connection = db;
   if (
@@ -337,16 +346,8 @@ export function getPublicPages(): PublicPage[] {
         ),
     );
 }
-export type SearchQuery = {
-  q?: string;
-  page?: number | string;
+export type SearchQuery = BrowseQuery & {
   pageSize?: number;
-  teacher?: string;
-  category?: string;
-  collection?: string;
-  topic?: string;
-  format?: string;
-  sort?: string;
   includeDrafts?: boolean;
 };
 export function getLessons(query: SearchQuery = {}) {
@@ -379,6 +380,35 @@ export function getLessons(query: SearchQuery = {}) {
     where.push("l.format=?");
     params.push(query.format);
   }
+  if (query.access && ["public", "members"].includes(query.access)) {
+    where.push("json_extract(l.payload,'$.access')=?");
+    params.push(query.access);
+  }
+  const seconds = "lesson_duration(json_extract(l.payload,'$.duration'))";
+  const durationRanges: Record<string, string> = {
+    short: `${seconds} < 600`,
+    medium: `${seconds} >= 600 AND ${seconds} < 1800`,
+    long: `${seconds} >= 1800 AND ${seconds} < 3600`,
+    extended: `${seconds} >= 3600`,
+  };
+  if (query.duration && Object.hasOwn(durationRanges, query.duration))
+    where.push(`(${durationRanges[query.duration]})`);
+  if (validPublicationDate(query.publishedFrom)) {
+    where.push("l.published_at >= ?");
+    params.push(query.publishedFrom);
+  }
+  if (validPublicationDate(query.publishedTo)) {
+    where.push("l.published_at < date(?, '+1 day')");
+    params.push(query.publishedTo);
+  }
+  if (query.dedication === "yes")
+    where.push(
+      "length(trim(coalesce(json_extract(l.payload,'$.dedication'),'')))>0",
+    );
+  if (query.dedication === "no")
+    where.push(
+      "length(trim(coalesce(json_extract(l.payload,'$.dedication'),'')))=0",
+    );
   const category = query.category || query.collection;
   const passGroup = LESSON_PASS_COLLECTIONS.find(
     (group) => group.slug === category,
@@ -438,16 +468,18 @@ export function getLessons(query: SearchQuery = {}) {
     Math.max(1, Math.ceil(total / pageSize)),
   );
   const order =
-    query.sort === "title"
-      ? "l.title COLLATE NOCASE"
-      : query.sort === "oldest"
-        ? "l.published_at ASC,l.id ASC"
-        : search &&
-            (!query.sort ||
-              query.sort === "relevance" ||
-              query.sort === "default")
-          ? "bm25(lesson_search,0,6,2,3,1),l.published_at DESC"
-          : "l.published_at DESC,l.id DESC";
+    query.sort === "sequence"
+      ? "lesson_sequence(l.title) ASC,l.id ASC"
+      : query.sort === "title"
+        ? "l.title COLLATE NOCASE"
+        : query.sort === "oldest"
+          ? "l.published_at ASC,l.id ASC"
+          : search &&
+              (!query.sort ||
+                query.sort === "relevance" ||
+                query.sort === "default")
+            ? "bm25(lesson_search,0,6,2,3,1),l.published_at DESC"
+            : "l.published_at DESC,l.id DESC";
   const items = (
     db
       .prepare(`SELECT l.payload ${from} ORDER BY ${order} LIMIT ? OFFSET ?`)

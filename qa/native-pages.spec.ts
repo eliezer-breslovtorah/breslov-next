@@ -48,7 +48,14 @@ test("native community pages fit and avoid WordPress navigation", async ({
   const invalid = await page.goto("/pages/toString");
   expect(invalid?.status()).toBe(404);
   await page.goto("/calendar");
-  await expect(page.locator(".support-grid .support-card")).toHaveCount(12);
+  await expect(
+    page.locator('section[aria-labelledby="all-months-heading"] .support-card'),
+  ).toHaveCount(12);
+  await expect(
+    page.locator(
+      'section[aria-labelledby="timely-teachings-heading"] .support-card',
+    ),
+  ).toHaveCount(2);
   await page.goto("/newsletter");
   await expect(page.getByText("Website", { exact: true })).toBeHidden();
   await expect(page.getByRole("checkbox")).toBeVisible();

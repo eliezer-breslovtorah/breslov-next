@@ -28,8 +28,12 @@ export function lessonSequenceKey(lesson: SequenceLesson): string {
     .toLowerCase();
   const tail = natural(title);
 
+  const beginner = title.match(
+    /\bbreslov basics\s*(?:-\s*)?(\d+)([a-z]?)(?=\b|\s*-)/,
+  );
+  if (beginner) return `0:n:00:${numbered(beginner[1], beginner[2])}:${tail}`;
   const date = title.match(/^(\d{4})-(\d{2})-(\d{2})(?:\b|\s*-)/);
-  if (date) return `0:d:${date[1]}${date[2]}${date[3]}:${tail}`;
+  if (date) return `0:z:${date[1]}${date[2]}${date[3]}:${tail}`;
 
   const halakhos = title.match(
     /^(oc[1-3]|yd[12]|eh|cm[12])\s*-\s*lesson\s+(\d+)([a-z]?)(?=\b|\s*-)/,

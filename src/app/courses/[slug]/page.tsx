@@ -1,3 +1,5 @@
+import { LearningConnection } from "@/components/learning-connection";
+import { readBrowseQuery } from "@/lib/browse-query";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { legacyDestination } from "@/lib/page-navigation";
@@ -32,12 +34,7 @@ export default async function Page({
     notFound();
   }
   const raw = await searchParams;
-  const query: BrowseQuery = Object.fromEntries(
-    ["q", "teacher", "topic", "format", "sort", "page"].map((key) => [
-      key,
-      typeof raw[key] === "string" ? raw[key] : undefined,
-    ]),
-  );
+  const query: BrowseQuery = readBrowseQuery(raw, ["category", "collection"]);
   query.sort = query.sort || "oldest";
   const result = getLessons({ ...query, category: slug });
   const all = getCollections();
@@ -94,12 +91,21 @@ export default async function Page({
           </div>
         </section>
       )}
+      <p>
+        <Link
+          className="button button-secondary"
+          href={`/courses/${encodeURIComponent(slug)}?sort=sequence`}
+        >
+          Study in text / lesson order →
+        </Link>
+      </p>
       <Library
         result={result}
         query={query}
         basePath={`/courses/${encodeURIComponent(slug)}`}
         fixedCategory={slug}
       />
+      <LearningConnection subject={collection.title} />
     </div>
   );
 }

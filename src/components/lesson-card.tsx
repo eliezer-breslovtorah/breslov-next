@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Headphones, ArrowUpRight } from "lucide-react";
+import { Headphones, ArrowUpRight, LockKeyhole } from "lucide-react";
 import type { Lesson } from "@/lib/content";
 import { getLessonPass, lessonPassLabel } from "@/lib/lesson-pass";
 export function LessonCard({ lesson }: { lesson: Lesson }) {
@@ -22,6 +22,11 @@ export function LessonCard({ lesson }: { lesson: Lesson }) {
         <p>{lesson.speaker}</p>
         <div className="meta">
           <span>{lesson.duration || "Explore lesson"}</span>
+          {lesson.access === "members" && (
+            <span>
+              <LockKeyhole size={12} aria-hidden="true" /> Members
+            </span>
+          )}
           <ArrowUpRight size={18} />
         </div>
       </div>

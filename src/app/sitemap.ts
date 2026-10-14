@@ -13,6 +13,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     process.env.SITE_URL || process.env.APP_ORIGIN || "http://localhost:3000";
   const paths = [
     "",
+    "/start",
+    "/meet-rav-nasan",
+    "/study",
     "/library",
     "/courses",
     "/teachers",

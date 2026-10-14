@@ -1,3 +1,4 @@
+import { LearningConnection } from "@/components/learning-connection";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLesson, getLessons, getMedia } from "@/lib/catalog";
@@ -30,7 +31,11 @@ export default async function Page({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ seriesPage?: string | string[] }>;
+  searchParams: Promise<{
+    seriesPage?: string | string[];
+    seriesOrder?: string | string[];
+    seriesCourse?: string | string[];
+  }>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
@@ -43,9 +48,14 @@ export default async function Page({
   const series = getLessonSeries(
     lesson,
     typeof query.seriesPage === "string" ? query.seriesPage : undefined,
+    query.seriesOrder === "sequence" ? "sequence" : "oldest",
+    typeof query.seriesCourse === "string" ? query.seriesCourse : undefined,
   );
+  const contextQuery = series?.contextSlug
+    ? `&seriesCourse=${encodeURIComponent(series.contextSlug)}`
+    : "";
   const seriesHref = (page: number) =>
-    `/lessons/${encodeURIComponent(lesson.slug)}?seriesPage=${page}#lesson-series`;
+    `/lessons/${encodeURIComponent(lesson.slug)}?seriesPage=${page}${series?.order === "sequence" ? "&seriesOrder=sequence" : ""}${contextQuery}#lesson-series`;
   const user = await getCurrentUser();
   const media = lesson.id ? getMedia(lesson.id) : undefined;
   const effectiveAccess = lesson.access || media?.access || "legacy";
@@ -203,13 +213,28 @@ export default async function Page({
             <div>
               <p className="eyebrow">More from this series</p>
               <h2 id="lesson-series-title">{series.collection.title}</h2>
-              <p>{series.total} lessons · Oldest first</p>
+              <p>
+                {series.total} lessons ·{" "}
+                {series.order === "sequence"
+                  ? "Text / lesson order"
+                  : "Oldest first"}
+              </p>
             </div>
-            <Link
-              href={`/courses/${encodeURIComponent(series.collection.slug)}`}
-            >
-              Browse this series →
-            </Link>
+            <div className="journey-actions">
+              <Link
+                href={`/lessons/${encodeURIComponent(lesson.slug)}?seriesOrder=${series.order === "sequence" ? "oldest" : "sequence"}${contextQuery}#lesson-series`}
+              >
+                {series.order === "sequence"
+                  ? "Use publication order"
+                  : "Study in text order"}{" "}
+                →
+              </Link>
+              <Link
+                href={`/courses/${encodeURIComponent(series.collection.slug)}${series.order === "sequence" ? "?sort=sequence" : ""}`}
+              >
+                Browse this series →
+              </Link>
+            </div>
           </div>
           {(series.previous || series.next) && (
             <nav
@@ -218,14 +243,16 @@ export default async function Page({
             >
               {series.previous && (
                 <Link
-                  href={`/lessons/${encodeURIComponent(series.previous.slug)}`}
+                  href={`/lessons/${encodeURIComponent(series.previous.slug)}${series.order === "sequence" ? `?seriesOrder=sequence${contextQuery}` : contextQuery ? `?seriesOrder=oldest${contextQuery}` : ""}`}
                 >
                   <small>← Previous lesson</small>
                   <strong>{series.previous.title}</strong>
                 </Link>
               )}
               {series.next && (
-                <Link href={`/lessons/${encodeURIComponent(series.next.slug)}`}>
+                <Link
+                  href={`/lessons/${encodeURIComponent(series.next.slug)}${series.order === "sequence" ? `?seriesOrder=sequence${contextQuery}` : contextQuery ? `?seriesOrder=oldest${contextQuery}` : ""}`}
+                >
                   <small>Next lesson →</small>
                   <strong>{series.next.title}</strong>
                 </Link>
@@ -245,7 +272,7 @@ export default async function Page({
                   href={
                     item.slug === lesson.slug
                       ? "#lesson-series"
-                      : `/lessons/${encodeURIComponent(item.slug)}`
+                      : `/lessons/${encodeURIComponent(item.slug)}${series.order === "sequence" ? `?seriesOrder=sequence${contextQuery}` : contextQuery ? `?seriesOrder=oldest${contextQuery}` : ""}`
                   }
                   aria-current={item.slug === lesson.slug ? "page" : undefined}
                 >
@@ -304,6 +331,7 @@ export default async function Page({
           ))}
         </div>
       </section>
+      <LearningConnection subject={lesson.title} />
     </div>
   );
 }

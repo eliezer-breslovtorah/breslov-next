@@ -1,14 +1,16 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Headphones, Search } from "lucide-react";
-import { getLessons, getCollections, getTeachers } from "@/lib/catalog";
+import { getLessons } from "@/lib/catalog";
+import { LIFE_TOPICS } from "@/lib/learning-paths";
+import { getTimelyTeachingWindow } from "@/lib/timely-teachings";
+import { LearningConnection } from "@/components/learning-connection";
 import { homepage } from "@/lib/homepage";
 import { FeaturedTeaching, ShortClips } from "@/components/home-media";
 import { LessonCard } from "@/components/lesson-card";
 export const dynamic = "force-dynamic";
 export default function Home() {
-  const lessons = getLessons({ pageSize: 4 }).items;
-  const collections = getCollections();
-  const teachers = getTeachers();
+  const lessons = getLessons({ pageSize: 4, sort: "newest" }).items;
+  const timely = getTimelyTeachingWindow();
   return (
     <div className="page-wrap">
       <section className="learning-hero" aria-label="Start learning">
@@ -53,6 +55,10 @@ export default function Home() {
               Start a course <BookOpen size={17} />
             </Link>
           </div>
+          <div className="journey-actions">
+            <Link href="/start">New to Breslov? Start here →</Link>
+            <Link href="/meet-rav-nasan">Meet Rav Nasan →</Link>
+          </div>
           <p className="welcome-note">
             <Headphones size={16} /> A few minutes can change your day.
           </p>
@@ -70,137 +76,129 @@ export default function Home() {
           </Link>
         </div>
         <ShortClips items={homepage.clips} />
+        <p className="journey-note">
+          Ready for a course?{" "}
+          <Link href="/lessons/azamra-lesson-1-lm1-torah-282-part-1">
+            Start with lesson 1
+          </Link>{" "}
+          of Azamra, finding the good in yourself and others.
+        </p>
       </section>
-      <section className="section">
+      <section className="section" aria-labelledby="learning-paths-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">MAKE LEARNING A JOURNEY</p>
-            <h2>Go deeper with a course</h2>
+            <p className="eyebrow">FIND YOUR WAY INTO BRESLOV</p>
+            <h2 id="learning-paths-heading">Where would you like to begin?</h2>
           </div>
-          <Link href="/courses">
-            All courses <ArrowRight size={16} />
-          </Link>
         </div>
-        <div className="collection-grid">
-          {homepage.courseSlugs
-            .map((slug) => collections.find((c) => c.slug === slug))
-            .filter((c) => c !== undefined)
-            .map((c, i) => (
-              <Link
-                className={`collection-card collection-${i}`}
-                href={
-                  homepage.firstLessons[c.slug]
-                    ? `/lessons/${homepage.firstLessons[c.slug]}`
-                    : `/courses/${c.slug}`
-                }
-                key={c.slug}
-              >
-                <BookOpen size={28} />
-                <span className="eyebrow">GUIDED LEARNING</span>
-                <h3>{c.title}</h3>
-                <p>{c.description}</p>
-                <span>
-                  {homepage.firstLessons[c.slug]
-                    ? "Start with lesson 1"
-                    : "Explore this course"}{" "}
-                  <ArrowRight size={18} />
-                </span>
-              </Link>
-            ))}
-        </div>
-      </section>
-      <section className="section">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">A LIVING TRADITION</p>
-            <h2>Learn from our teachers</h2>
-          </div>
-          <Link href="/teachers">
-            Meet the teachers <ArrowRight size={16} />
-          </Link>
-        </div>
-        <div className="teacher-grid">
-          {teachers.map((t) => (
-            <Link
-              className="teacher-card"
-              href={`/teachers/${t.slug}`}
-              key={t.slug}
-            >
-              <img src={t.image} alt={t.name} />
-              <div>
-                <h3>{t.name}</h3>
-                <p>{t.description}</p>
-                <span>
-                  Explore teachings <ArrowRight size={16} />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-      <section className="topic-section">
-        <div>
-          <p className="eyebrow">WISDOM FOR EVERY PART OF LIFE</p>
-          <h2>What’s on your mind?</h2>
-        </div>
-        <div className="topics">
+        <div className="journey-grid">
           {[
-            "Faith",
-            "Joy",
-            "Prayer",
-            "Family peace",
-            "Rebbe Nachman",
-            "Parsha",
-          ].map((t) => (
-            <Link
-              className="topic-pill"
-              href={`/library?q=${encodeURIComponent(t)}`}
-              key={t}
-            >
-              {t}
-              <ArrowUpRightIcon />
-            </Link>
+            [
+              "New to Breslov",
+              "A gentle path from the first step to finding good, prayer, and joy.",
+              "/start",
+              "Start from the beginning",
+            ],
+            [
+              "Meet Rav Nasan",
+              "Hear his teaching in less than five minutes, then get to know his work.",
+              "/meet-rav-nasan",
+              "Listen and meet Rav Nasan",
+            ],
+            [
+              "Find your next lesson",
+              "Search teachers, texts, tags, formats, dates, and the time you have available.",
+              "/library#library-query",
+              "Explore the lesson library",
+            ],
+            [
+              "Study a text systematically",
+              "Choose a sefer and continue through its lessons in text order.",
+              "/study",
+              "Choose a text",
+            ],
+            [
+              "Torah for everyday life",
+              "Explore joy, relationships, parenting, prayer, and faith.",
+              "/courses?group=topics",
+              "Explore life subjects",
+            ],
+            [
+              "Learn with the season",
+              "Find the Jewish calendar’s current and upcoming teachings.",
+              "/calendar",
+              "See timely teachings",
+            ],
+          ].map(([title, description, href, label]) => (
+            <article className="journey-card" key={href}>
+              <h3>{title}</h3>
+              <p>{description}</p>
+              <Link href={href}>
+                {label} <ArrowRight size={16} />
+              </Link>
+            </article>
           ))}
         </div>
       </section>
-      <section className="section">
+      <section className="section" aria-labelledby="life-topics-heading">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">A PLACE TO BEGIN</p>
-            <h2>Discover the teachings</h2>
+            <p className="eyebrow">TORAH FOR EVERYDAY LIFE</p>
+            <h2 id="life-topics-heading">What’s on your mind?</h2>
+            <p>
+              Begin with a life question. These paths lead to real courses, with
+              recordings ready to explore.
+            </p>
           </div>
-          <Link href="/library">
-            Browse all lessons <ArrowRight size={16} />
-          </Link>
+          <Link href="/courses?group=topics">All life subjects →</Link>
+        </div>
+        <div className="journey-grid">
+          {LIFE_TOPICS.map((topic) => (
+            <article className="journey-card" key={topic.href}>
+              <h3>{topic.label}</h3>
+              <p>{topic.description}</p>
+              <Link href={topic.href}>Explore teachings →</Link>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="section" aria-labelledby="timely-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">LEARN WITH THE JEWISH YEAR</p>
+            <h2 id="timely-heading">Timely teachings</h2>
+          </div>
+          <Link href="/calendar">Explore the calendar →</Link>
+        </div>
+        <div className="journey-grid">
+          {[timely.currentMonth, timely.nextMonth].map((month, index) => (
+            <article className="journey-card" key={`${month.slug}-${index}`}>
+              <p className="eyebrow">
+                {index === 0 ? "THIS MONTH" : "COMING NEXT"}
+              </p>
+              <h3>{month.label}</h3>
+              <p>{month.theme}</p>
+              <Link href={month.href}>Explore {month.label} teachings →</Link>
+            </article>
+          ))}
+        </div>
+      </section>
+      <section className="section" aria-labelledby="latest-heading">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">KEEP YOUR LEARNING GOING</p>
+            <h2 id="latest-heading">Latest lessons</h2>
+            <p>Recently published in the library.</p>
+          </div>
+          <Link href="/library?sort=newest">See all recent lessons →</Link>
         </div>
         <div className="card-grid">
-          {lessons
-            .filter(
-              (lesson, index) => index === 0 || index >= lessons.length - 3,
-            )
-            .slice(0, 4)
-            .filter(Boolean)
-            .map((lesson) => (
-              <LessonCard key={lesson.slug} lesson={lesson} />
-            ))}
+          {lessons.map((lesson) => (
+            <LessonCard key={lesson.slug} lesson={lesson} />
+          ))}
         </div>
       </section>
-      <section className="community-banner">
-        <div>
-          <p className="eyebrow">HELP KEEP TORAH ACCESSIBLE</p>
-          <h2>Share the light of Breslov.</h2>
-          <p>
-            Support the preservation and sharing of these teachings for
-            generations to come.
-          </p>
-        </div>
-        <a className="button" href="/donate">
-          Support our work <ArrowRight size={18} />
-        </a>
-      </section>
+      <LearningConnection />
     </div>
   );
-}
-function ArrowUpRightIcon() {
-  return <ArrowRight size={16} />;
 }
