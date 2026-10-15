@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, BookOpen, Headphones, Search } from "lucide-react";
+import { ArrowRight, BookOpen, Headphones } from "lucide-react";
 import { getLessons } from "@/lib/catalog";
 import { LIFE_TOPICS } from "@/lib/learning-paths";
 import { getTimelyTeachingWindow } from "@/lib/timely-teachings";
 import { LearningConnection } from "@/components/learning-connection";
 import { homepage } from "@/lib/homepage";
 import { FeaturedTeaching, ShortClips } from "@/components/home-media";
+import { HeaderSearch } from "@/components/header-search";
 import { LessonCard } from "@/components/lesson-card";
 export const dynamic = "force-dynamic";
 export default function Home() {
@@ -29,24 +30,7 @@ export default function Home() {
             Listen, find inspiration, and bring the wisdom of Breslov into
             everyday life. Begin with a class or find your own path.
           </p>
-          <form className="home-search hero-search" action="/library">
-            <Search aria-hidden="true" size={20} />
-            <label className="sr-only" htmlFor="home-query">
-              Search lessons
-            </label>
-            <input
-              id="home-query"
-              name="q"
-              placeholder="What would you like to learn?"
-            />
-            <button
-              className="search-go"
-              type="submit"
-              aria-label="Search lessons"
-            >
-              <ArrowRight size={20} />
-            </button>
-          </form>
+          <HeaderSearch inline />
           <div className="discovery-actions">
             <Link className="button" href="/library">
               Browse all classes <ArrowRight size={17} />

@@ -122,3 +122,7 @@ Edit the curated selections in `src/lib/learning-paths.ts`. Beginner steps and t
 The shared question and giving panels use the existing contact inbox and donation pages. Questions prefill the relevant lesson or course in the subject and reach the team for Rav Nasan; this change adds no automatic email delivery. Projects describe the existing Torah, community, family, and holiday activities and link to their existing donation forms. No payment integration or new charge was introduced.
 
 Run `npm run test:learning` for 16 focused catalog, ordering, date, filter, and Hebrew-month checks. `qa/learning-journeys.spec.ts` exercises these journeys at 1440, 768, 390, and 320 pixels.
+
+## Unified homepage tag search (2026-10-15)
+
+The homepage renders the inline variant of `src/components/header-search.tsx`, sharing the header’s debounced tag autocomplete, keyboard navigation, fallback search, and results navigation. Matching tags are alphabetized before the 20-result limit in `src/lib/tag-search.ts`, also benefiting the library tag finder. Selecting a tag opens `/library?topic=...`; submitting text opens `/library?q=...`. The existing library is the search results page. No new search service or database migration is needed.

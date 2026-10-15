@@ -89,3 +89,9 @@ A fresh source extraction passed npm ci, TypeScript checking, production build, 
 Checks cover beginner playback and four real course steps, three short Rav Nasan samples and biography, immediate combined filters and tag keyboard autocomplete, invalid filter values, complete course scope and ordering across continuation links, life subjects, monthly recommendations, questions prefilled with lesson context, and existing donation destinations. Tests run at 1440, 768, 390, and 320 pixels. Reviewed screenshots include the desktop homepage, narrow beginner path, advanced filters, and question/project pages. No automated messages or payments were submitted.
 
 After deployment, all 28 targeted HTTPS preview checks passed again across the four viewports; four write-fixture checks stayed skipped. The WordPress homepage returned HTTP 200 and both the preview and media watcher services remained active. Existing recordings, WordPress content, and payment handling were unchanged.
+
+## Unified tag autocomplete (2026-10-15)
+
+TypeScript checking and a source-matched production build passed. All 24 targeted homepage/header browser checks passed at 1440, 768, 390, and 320 pixels. Checks cover alphabetized matching tags, matching homepage/header suggestions, keyboard and pointer selection into library results, rare tags, arbitrary text searches, failed suggestion requests, unsafe/Unicode API inputs, and header/player stacking. Desktop and narrow-screen screenshots were reviewed.
+
+All eight final homepage HTTPS checks passed on the deployed preview across the four viewports. The original WordPress homepage returned HTTP 200 and both preview/media-watcher services remained active. The portable source archive was refreshed.

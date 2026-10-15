@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useRef, useState, useId } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, X } from "lucide-react";
+import { ArrowRight, Search, X } from "lucide-react";
 import "@/app/header-search.css";
 type Tag = { slug: string; title: string; count: number };
-export function HeaderSearch() {
+export function HeaderSearch({ inline = false }: { inline?: boolean }) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [tags, setTags] = useState<Tag[]>([]);
@@ -26,13 +26,13 @@ export function HeaderSearch() {
   }, [pathname]);
   useEffect(() => {
     if (!open) return;
-    input.current?.focus();
+    if (!inline) input.current?.focus();
     const outside = (event: PointerEvent) => {
       if (!root.current?.contains(event.target as Node)) setOpen(false);
     };
     document.addEventListener("pointerdown", outside);
     return () => document.removeEventListener("pointerdown", outside);
-  }, [open]);
+  }, [open, inline]);
   useEffect(() => {
     setTags([]);
     setActive(-1);
@@ -79,23 +79,29 @@ export function HeaderSearch() {
     );
   };
   return (
-    <div className="header-search" ref={root}>
-      <button
-        type="button"
-        className="header-search-trigger search-link"
-        ref={trigger}
-        aria-label="Search the library"
-        aria-expanded={open}
-        aria-controls={`${id}-panel`}
-        onClick={() => (open ? close(true) : setOpen(true))}
-      >
-        <Search size={20} />
-      </button>
-      {open && (
+    <div className={inline ? "home-tag-search" : "header-search"} ref={root}>
+      {!inline && (
+        <button
+          type="button"
+          className="header-search-trigger search-link"
+          ref={trigger}
+          aria-label="Search the library"
+          aria-expanded={open}
+          aria-controls={`${id}-panel`}
+          onClick={() => (open ? close(true) : setOpen(true))}
+        >
+          <Search size={20} />
+        </button>
+      )}
+      {(inline || open) && (
         <section
           id={`${id}-panel`}
-          className="header-search-panel"
-          aria-label="Library search"
+          className={
+            inline
+              ? "home-tag-panel header-search-content"
+              : "header-search-panel header-search-content"
+          }
+          aria-label={inline ? "Homepage search" : "Library search"}
           onKeyDown={(event) => {
             if (event.key === "Escape") {
               event.preventDefault();
@@ -106,23 +112,39 @@ export function HeaderSearch() {
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              navigate(tags[active]);
+              navigate(open ? tags[active] : undefined);
             }}
           >
-            <label htmlFor={`${id}-query`}>Search lessons and tags</label>
-            <div className="header-search-field">
+            <label
+              className={inline ? "sr-only" : undefined}
+              htmlFor={`${id}-query`}
+            >
+              {inline ? "Search lessons" : "Search lessons and tags"}
+            </label>
+            <div
+              className={
+                inline ? "home-search hero-search" : "header-search-field"
+              }
+            >
               <Search size={18} />
               <input
                 ref={input}
                 id={`${id}-query`}
                 role="combobox"
                 aria-autocomplete="list"
-                aria-expanded={tags.length > 0}
+                aria-expanded={open && tags.length > 0}
                 aria-controls={`${id}-tags`}
                 aria-activedescendant={
-                  active >= 0 ? `${id}-tag-${active}` : undefined
+                  open && active >= 0 ? `${id}-tag-${active}` : undefined
                 }
-                placeholder="Search a topic or lesson…"
+                placeholder={
+                  inline
+                    ? "What would you like to learn?"
+                    : "Search a topic or lesson…"
+                }
+                onFocus={() => {
+                  if (inline) setOpen(true);
+                }}
                 value={query}
                 maxLength={200}
                 onChange={(event) => setQuery(event.target.value)}
@@ -142,18 +164,28 @@ export function HeaderSearch() {
                   }
                 }}
               />
-              <button
-                type="button"
-                aria-label="Close search"
-                onClick={() => close(true)}
-              >
-                <X size={18} />
-              </button>
+              {inline ? (
+                <button
+                  className="search-go"
+                  type="submit"
+                  aria-label="Search lessons"
+                >
+                  <ArrowRight size={20} />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  aria-label="Close search"
+                  onClick={() => close(true)}
+                >
+                  <X size={18} />
+                </button>
+              )}
             </div>
             <p className="header-search-hint">
               Choose a tag, or press Enter to search all lessons.
             </p>
-            {tags.length > 0 && (
+            {open && tags.length > 0 && (
               <ul id={`${id}-tags`} role="listbox" aria-label="Lesson tags">
                 {tags.map((tag, index) => (
                   <li
@@ -171,7 +203,7 @@ export function HeaderSearch() {
                 ))}
               </ul>
             )}
-            <p className="header-search-status" role="status">
+            <p className="header-search-status" role="status" hidden={!open}>
               {loading
                 ? "Finding tags…"
                 : failed
