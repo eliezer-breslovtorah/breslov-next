@@ -95,3 +95,9 @@ After deployment, all 28 targeted HTTPS preview checks passed again across the f
 TypeScript checking and a source-matched production build passed. All 24 targeted homepage/header browser checks passed at 1440, 768, 390, and 320 pixels. Checks cover alphabetized matching tags, matching homepage/header suggestions, keyboard and pointer selection into library results, rare tags, arbitrary text searches, failed suggestion requests, unsafe/Unicode API inputs, and header/player stacking. Desktop and narrow-screen screenshots were reviewed.
 
 All eight final homepage HTTPS checks passed on the deployed preview across the four viewports. The original WordPress homepage returned HTTP 200 and both preview/media-watcher services remained active. The portable source archive was refreshed.
+
+## Mobile homepage aligned with iTorah (2026-10-20)
+
+TypeScript and a clean source-matched production build passed. The final HTTPS suite passed 25 checks across desktop (1440), tablet (768), phone (390), and narrow phone (320). Three duplicate resize-sweep cases were skipped because that sweep runs once under the desktop project; it verifies widths 639, 640, 800, and 1024. Checks cover phone section order, the five-row latest list, horizontal teacher scrolling, preserved four-card tablet/desktop layout, no horizontal page overflow, video loading on demand, all three playable excerpts, persistent audio controls, alphabetized tag selection, and fallback text search. Desktop and phone full-page screenshots were reviewed.
+
+An initial teacher-rail viewport assertion was corrected to scroll vertically to the rail before testing horizontal scrolling; the corrected local layout checks and final complete HTTPS suite passed. No runtime correction was needed. The original WordPress homepage returned HTTP 200, the media watcher stayed active, and the reference iTorah repository stayed clean. Original recordings and WordPress were unchanged.

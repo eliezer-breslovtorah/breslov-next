@@ -126,3 +126,9 @@ Run `npm run test:learning` for 16 focused catalog, ordering, date, filter, and 
 ## Unified homepage tag search (2026-10-15)
 
 The homepage renders the inline variant of `src/components/header-search.tsx`, sharing the header’s debounced tag autocomplete, keyboard navigation, fallback search, and results navigation. Matching tags are alphabetized before the 20-result limit in `src/lib/tag-search.ts`, also benefiting the library tag finder. Selecting a tag opens `/library?topic=...`; submitting text opens `/library?q=...`. The existing library is the search results page. No new search service or database migration is needed.
+
+## Mobile homepage shelves (2026-10-20)
+
+Below 640px the homepage follows the iTorah repo’s compact phone structure: a Jerusalem-time Hebrew date, full-width featured teaching, search and browse actions, current/upcoming month suggestions, a horizontal rabbanim portrait rail, five compact recent lesson rows, short playable clips, and two-column learning-path/subject tiles. Questions and giving remain available below. Existing catalog records, teacher photographs, original media, and playback/search components are reused. No carousel or additional catalog service was introduced.
+
+Styles are scoped to `.home-page` in `src/app/home-mobile.css`. At 640px and above the existing preview layout remains in place, with four latest cards; the phone date and teacher rail are hidden. Run `qa/mobile-home.spec.ts`, `qa/homepage-media.spec.ts`, and `qa/home-tag-search.spec.ts` for layout, media, and search coverage.

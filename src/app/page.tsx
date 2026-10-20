@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Headphones } from "lucide-react";
-import { getLessons } from "@/lib/catalog";
+import "./home-mobile.css";
+import { getLessons, getTeachers } from "@/lib/catalog";
 import { LIFE_TOPICS } from "@/lib/learning-paths";
 import { getTimelyTeachingWindow } from "@/lib/timely-teachings";
 import { LearningConnection } from "@/components/learning-connection";
@@ -10,10 +11,19 @@ import { HeaderSearch } from "@/components/header-search";
 import { LessonCard } from "@/components/lesson-card";
 export const dynamic = "force-dynamic";
 export default function Home() {
-  const lessons = getLessons({ pageSize: 4, sort: "newest" }).items;
+  const lessons = getLessons({ pageSize: 5, sort: "newest" }).items;
+  const teachers = getTeachers();
+  const now = new Date();
+  const hebrewDate = new Intl.DateTimeFormat("en-US-u-ca-hebrew", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jerusalem",
+  }).format(now);
   const timely = getTimelyTeachingWindow();
   return (
-    <div className="page-wrap">
+    <div className="page-wrap home-page">
+      <p className="home-mobile-date">Today is {hebrewDate}</p>
       <section className="learning-hero" aria-label="Start learning">
         <div className="featured-column">
           <p className="eyebrow">START LEARNING RIGHT HERE</p>
@@ -68,7 +78,10 @@ export default function Home() {
           of Azamra, finding the good in yourself and others.
         </p>
       </section>
-      <section className="section" aria-labelledby="learning-paths-heading">
+      <section
+        className="section home-paths"
+        aria-labelledby="learning-paths-heading"
+      >
         <div className="section-heading">
           <div>
             <p className="eyebrow">FIND YOUR WAY INTO BRESLOV</p>
@@ -124,7 +137,10 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className="section" aria-labelledby="life-topics-heading">
+      <section
+        className="section home-life"
+        aria-labelledby="life-topics-heading"
+      >
         <div className="section-heading">
           <div>
             <p className="eyebrow">TORAH FOR EVERYDAY LIFE</p>
@@ -146,7 +162,10 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className="section" aria-labelledby="timely-heading">
+      <section
+        className="section home-seasonal"
+        aria-labelledby="timely-heading"
+      >
         <div className="section-heading">
           <div>
             <p className="eyebrow">LEARN WITH THE JEWISH YEAR</p>
@@ -167,7 +186,34 @@ export default function Home() {
           ))}
         </div>
       </section>
-      <section className="section" aria-labelledby="latest-heading">
+      <section
+        className="section home-rabbanim"
+        aria-labelledby="home-rabbanim-heading"
+      >
+        <div className="section-heading">
+          <h2 id="home-rabbanim-heading">Our rabbanim</h2>
+          <Link href="/teachers">See all →</Link>
+        </div>
+        <div
+          className="home-teacher-rail"
+          tabIndex={0}
+          role="region"
+          aria-label="Browse our rabbanim"
+        >
+          {teachers.map((teacher) => (
+            <Link
+              href={`/teachers/${teacher.slug}`}
+              key={teacher.slug}
+              className="home-teacher-tile"
+            >
+              <img src={teacher.image} alt="" loading="lazy" />
+              <h3>{teacher.name}</h3>
+              <span>Explore teachings →</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section className="section home-latest" aria-labelledby="latest-heading">
         <div className="section-heading">
           <div>
             <p className="eyebrow">KEEP YOUR LEARNING GOING</p>

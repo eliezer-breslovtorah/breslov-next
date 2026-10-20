@@ -1,0 +1,321 @@
+/* Phone homepage shelves follow the iTorah app; larger layouts retain the preview design. */
+.home-mobile-date,
+.home-rabbanim,
+.home-latest .lesson-card:nth-child(n + 5) {
+  display: none;
+}
+@media (max-width: 639px) {
+  .home-page {
+    width: calc(100% - 32px);
+    display: flex;
+    flex-direction: column;
+    --home-blue: #336699;
+  }
+  .home-page > * {
+    min-width: 0;
+  }
+  .home-page .home-mobile-date {
+    display: block;
+    order: 0;
+    color: var(--muted);
+    font-size: 12px;
+    margin: 14px 0 12px;
+  }
+  .home-page > .learning-hero {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 0;
+    margin: 0 0 24px;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+    max-width: none;
+    width: 100%;
+  }
+  .home-page .featured-column {
+    width: calc(100% + 32px);
+    margin-inline: -16px;
+  }
+  .home-page .featured-column > .eyebrow {
+    display: none;
+  }
+  .home-page .featured-teaching {
+    border-radius: 0;
+    box-shadow: none;
+    background: #1f3e5c;
+  }
+  .home-page .featured-teaching > .media-tabs {
+    padding: 8px 16px;
+  }
+  .home-page .feature-poster {
+    aspect-ratio: 16 / 9;
+  }
+  .home-page .featured-meta {
+    padding: 16px;
+    align-items: center;
+  }
+  .home-page .featured-meta h3 {
+    font-family: inherit;
+    font-size: 20px;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+  .home-page .featured-meta p {
+    font-size: 12px;
+    margin: 0;
+  }
+  .home-page .featured-meta > a {
+    min-height: 44px;
+    font-size: 11px;
+    white-space: normal;
+  }
+  .home-page .learning-welcome {
+    width: 100%;
+    padding: 0;
+  }
+  .home-page .learning-welcome > .eyebrow,
+  .home-page .learning-welcome > p,
+  .home-page .journey-actions {
+    display: none;
+  }
+  .home-page .learning-welcome h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .home-page .home-tag-search {
+    margin: 0 0 12px;
+  }
+  .home-page .hero-search {
+    margin-top: 0;
+  }
+  .home-page .discovery-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .home-page .discovery-actions .button {
+    justify-content: center;
+    padding: 10px 8px;
+    font-size: 12px;
+    min-height: 44px;
+  }
+  .home-page .section-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .home-page .section-heading h2 {
+    font: 700 21px/1.25 var(--font-body, sans-serif);
+    margin: 0;
+  }
+  .home-page .section-heading .eyebrow,
+  .home-page .section-heading p:not(.eyebrow) {
+    display: none;
+  }
+  .home-page .section-heading > a {
+    color: var(--home-blue);
+    font-size: 12px;
+    min-height: 44px;
+  }
+  .home-page > .section {
+    padding: 0;
+    margin: 0 0 28px;
+  }
+  .home-page > .home-seasonal {
+    order: 2;
+    padding: 16px;
+    border: 1px solid #dce4ec;
+    border-radius: 10px;
+    background: #edf3f9;
+  }
+  .home-page .home-seasonal .section-heading {
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+  }
+  .home-page .home-seasonal .journey-grid {
+    display: block;
+  }
+  .home-page .home-seasonal .journey-card {
+    padding: 12px 0;
+    border: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .home-page .home-seasonal .journey-card + .journey-card {
+    border-top: 1px solid #dce4ec;
+  }
+  .home-page .home-seasonal .journey-card h3 {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .home-page .home-seasonal .journey-card .eyebrow {
+    font-size: 9px;
+    margin: 0 0 6px;
+  }
+  .home-page .home-seasonal .journey-card p:not(.eyebrow) {
+    margin: 4px 0;
+    font-size: 13px;
+  }
+  .home-page .home-seasonal .journey-card > a {
+    color: var(--home-blue);
+    font-size: 13px;
+  }
+  .home-page > .home-rabbanim {
+    display: block;
+    order: 3;
+  }
+  .home-teacher-rail {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 12px;
+  }
+  .home-teacher-tile {
+    flex: 0 0 132px;
+    scroll-snap-align: start;
+  }
+  .home-teacher-tile img {
+    width: 132px;
+    aspect-ratio: 3/4;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 10px;
+    background: #edf3f9;
+  }
+  .home-teacher-tile h3 {
+    font-size: 15px;
+    line-height: 1.35;
+    margin: 10px 0 4px;
+    overflow-wrap: anywhere;
+  }
+  .home-teacher-tile span {
+    color: var(--home-blue);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .home-page > .home-latest {
+    order: 4;
+  }
+  .home-page .home-latest .card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .home-page .home-latest .lesson-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .home-page .home-latest .card-art {
+    width: 56px;
+    height: 64px;
+    flex: 0 0 56px;
+    border-radius: 6px;
+  }
+  .home-page .home-latest .card-art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .home-page .home-latest .media-badge,
+  .home-page .home-latest .card-body > .eyebrow {
+    display: none;
+  }
+  .home-page .home-latest .card-body {
+    padding: 0;
+    min-width: 0;
+    flex: 1;
+  }
+  .home-page .home-latest h3 {
+    font: 600 15px/1.4 sans-serif;
+    margin: 0 0 4px;
+    overflow-wrap: anywhere;
+  }
+  .home-page .home-latest .card-body > p {
+    font-size: 12px;
+    margin: 0 0 4px;
+  }
+  .home-page .home-latest .meta {
+    margin: 0;
+    font-size: 11px;
+  }
+  .home-page > .quick-listen {
+    order: 5;
+  }
+  .home-page .short-clips {
+    gap: 0;
+  }
+  .home-page .clip-card {
+    padding: 14px 0;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    background: transparent;
+  }
+  .home-page .clip-card h3 {
+    font-family: inherit;
+    font-size: 16px;
+  }
+  .home-page .journey-note {
+    font-size: 13px;
+    margin-top: 14px;
+  }
+  .home-page > .home-paths {
+    order: 6;
+  }
+  .home-page > .home-life {
+    order: 7;
+  }
+  .home-page .home-paths .journey-grid,
+  .home-page .home-life .journey-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .home-page .home-paths .journey-card,
+  .home-page .home-life .journey-card {
+    padding: 14px 12px;
+    border-radius: 10px;
+  }
+  .home-page .home-paths .journey-card h3,
+  .home-page .home-life .journey-card h3 {
+    font-family: inherit;
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+  .home-page .home-paths .journey-card p,
+  .home-page .home-life .journey-card p {
+    display: none;
+  }
+  .home-page .home-paths .journey-card > a,
+  .home-page .home-life .journey-card > a {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--home-blue);
+  }
+  .home-page > .learning-connection {
+    order: 8;
+  }
+}
